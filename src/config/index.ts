@@ -15,6 +15,15 @@ const envSchema = {
     },
     SECRET_KEY: {
       type: 'string'
+    },
+    AWS_COGNITO_USER_POOL_ID: {
+      type: 'string'
+    },
+    AWS_COGNITO_CLIENT_ID: {
+      type: 'string'
+    },
+    AWS_REGION: {
+      type: 'string'
     }
   }
 };

@@ -16,6 +16,8 @@ import mongodbPlugin from '@plugins/mongodb';
 
 import { schemaErrorFormatter } from '@utils/schemaErrorFormatter';
 import { envOptions } from '@config';
+import { serviceContainer } from './modules/containers/service.container';
+import { errorContainer } from './exceptions/error.container';
 
 class App {
   public app: FastifyInstance;
@@ -60,6 +62,7 @@ class App {
 
   private async init() {
     await this.initializePlugins();
+    await this.initializeContainers();
     this.initializeRoutes();
     this.initializeErrorHandling();
   }
@@ -79,6 +82,13 @@ class App {
     this.app.register(fastifyJwt, { secret: this.app.config.SECRET_KEY });
     this.app.register(authentication);
     this.app.register(initSwagger);
+  }
+
+  private async initializeContainers() {
+    await serviceContainer.init(this.app);
+    this.app.decorate('serviceContainer', serviceContainer);
+
+    errorContainer.init(this.app);
   }
 
   private initializeRoutes() {

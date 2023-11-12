@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
-
-export enum UserTier {
-  FREE = 'FREE',
-  PRO = 'PRO',
-  PREMIUM = 'PREMIUM'
-}
+import { UserTier } from '@/utils/enum.type';
 
 export const userSchema = new mongoose.Schema(
   {

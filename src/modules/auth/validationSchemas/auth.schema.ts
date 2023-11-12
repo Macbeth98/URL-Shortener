@@ -11,12 +11,12 @@ const passwordSchema = Type.String({
   }
 });
 
-export const SignupUserBodySchema = Type.Object({
+export const RegisterUserBodySchema = Type.Object({
   ...CreateUserBodySchema.properties,
   password: passwordSchema
 });
 
-export const SignupUserResponseSchema = Type.Object({
+export const RegisterUserResponseSchema = Type.Object({
   status: Type.String({ default: 'OK' }),
   user: UserResponseSchema,
   message: Type.String({ default: 'User created successfully' }),
@@ -42,7 +42,7 @@ export const LoginUserResponseSchema = Type.Object({
   refreshToken: Type.String({ description: 'JWT refresh token.' })
 });
 
-export const SignupUserSchema: FastifySchema = {
+export const RegisterUserSchema: FastifySchema = {
   description: 'Signup / Register user',
   tags: ['auth'],
   summary: 'Signup / Register user',
@@ -50,7 +50,7 @@ export const SignupUserSchema: FastifySchema = {
     type: 'object',
     required: ['username', 'email', 'password'],
     properties: {
-      ...SignupUserBodySchema.properties
+      ...RegisterUserBodySchema.properties
     }
   },
   response: {
@@ -58,7 +58,7 @@ export const SignupUserSchema: FastifySchema = {
       description: 'Successful created User',
       type: 'object',
       properties: {
-        ...SignupUserResponseSchema.properties
+        ...RegisterUserResponseSchema.properties
       }
     },
     400: ERROR400,

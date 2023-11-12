@@ -1,14 +1,13 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyRequest } from 'fastify';
 
 import UserService from '@modules/user/user.service';
 import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
-import { MongoUserDAO } from './daos/mongo-user.dao';
 
 class UserController {
   public userService: UserService;
 
-  constructor(fastify: FastifyInstance) {
-    this.userService = new UserService(fastify, new MongoUserDAO());
+  constructor(userService: UserService) {
+    this.userService = userService;
   }
 
   public createUser = async (req: FastifyRequest<{ Body: CreateUserDto }>) => {

@@ -1,7 +1,7 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { FastifySchema } from 'fastify';
 import { ERROR400, ERROR401, ERROR404, ERROR409, ERROR500 } from '@/constants/error.constants';
-import { UserTier } from '../modelSchemas/user.model';
+import { UserTier } from '@/utils/enum.type';
 
 export const CreateUserBodySchema = Type.Object({
   username: Type.String({ minLength: 3, maxLength: 20 }),
@@ -10,7 +10,7 @@ export const CreateUserBodySchema = Type.Object({
 });
 
 export const UserResponseSchema = Type.Object({
-  _id: Type.String({ pattern: '^[0-9a-fA-F]{24}$' }),
+  _id: Type.Optional(Type.String({ pattern: '^[0-9a-fA-F]{24}$' })),
   username: Type.String({ minLength: 3, maxLength: 20 }),
   email: Type.String({ format: 'email' }),
   tier: Type.Enum(UserTier, { default: UserTier.FREE, description: 'Displays the Current User Tier' }),

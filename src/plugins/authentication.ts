@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
-import { Unauthorized } from '@exceptions/error';
+import { Unauthorized } from '@/exceptions/error.container';
 
 export const authentication = fastifyPlugin((fastify: FastifyInstance, _: unknown, done: () => void) => {
   const authPreHandler = async (request: FastifyRequest) => {

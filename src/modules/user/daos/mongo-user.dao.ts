@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import { OrderValueBy } from '@/constants/db.constants';
 import { CreateUserDto, UserResponseDto } from '../dtos/user.dto';
 import { IUserDocument } from '../interfaces/user.interface';
@@ -5,22 +6,30 @@ import { IUserDAO } from './IUserDAO';
 import { UserModel } from '../modelSchemas/user.model';
 
 export class MongoUserDAO implements IUserDAO {
-  async createUser(createData: CreateUserDto): Promise<IUserDocument> {
-    const userDocument = await new UserModel(createData).save();
+  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUserDocument> {
+    const userDocument = await new UserModel(createData).save({ session });
     return userDocument;
   }
 
-  async getUserByEmail(email: string): Promise<IUserDocument | null> {
-    const userDocument = await UserModel.findOne({ email });
+  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<IUserDocument | null> {
+    const or = [];
+    if (email) {
+      or.push({ email: email.toLowerCase() });
+    }
+    if (username) {
+      or.push({ username: username.toLowerCase() });
+    }
+
+    const userDocument = await UserModel.findOne({ $or: or });
     return userDocument;
   }
 
-  async getUser(filterBy: { email?: string; username?: string }): Promise<IUserDocument | null> {
+  public async getUser(filterBy: { email?: string; username?: string }): Promise<IUserDocument | null> {
     const userDocument = await UserModel.findOne(filterBy);
     return userDocument;
   }
 
-  async getAllUsers(
+  public async getAllUsers(
     filterBy: Partial<UserResponseDto>,
     skip: number,
     limit: number,
@@ -34,16 +43,20 @@ export class MongoUserDAO implements IUserDAO {
     return userDocuments;
   }
 
-  async updateUser(
+  public async updateUser(
     email: string,
-    updateData: Partial<Omit<CreateUserDto, 'email' | 'password'>>
+    updateData: Partial<Omit<CreateUserDto, 'email' | 'password'>>,
+    session?: ClientSession
   ): Promise<IUserDocument | null> {
-    const userDocument = await UserModel.findOneAndUpdate({ email }, updateData, { new: true });
+    const userDocument = await UserModel.findOneAndUpdate({ email: email.toLowerCase() }, updateData, {
+      new: true,
+      session
+    });
     return userDocument;
   }
 
-  async deleteUser(email: string): Promise<boolean> {
-    const result = await UserModel.deleteOne({ email });
+  public async deleteUser(email: string, session?: ClientSession): Promise<boolean> {
+    const result = await UserModel.deleteOne({ email }, { session });
     return result.deletedCount === 1;
   }
 }

@@ -36,6 +36,8 @@
     "@fastify/type-provider-typebox": "3.4.0",
     "@sinclair/typebox": "0.30.2",
     "ajv-errors": "3.0.0",
+    "amazon-cognito-identity-js": "^6.3.7",
+    "aws-sdk": "^2.1494.0",
     "bcrypt": "5.1.0",
     "fastify": "4.21.0",
     "fastify-plugin": "4.5.1",

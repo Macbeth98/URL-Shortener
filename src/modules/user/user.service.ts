@@ -1,42 +1,43 @@
-import { hash } from 'bcrypt';
-
-import { FastifyInstance } from 'fastify';
+import { ClientSession } from 'mongoose';
 import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from './dtos/user.dto';
 import { IUserDAO } from './daos/IUserDAO';
-import { User } from './interfaces/user.interface';
+import { IUserDocument, User } from './interfaces/user.interface';
 import { OrderValueBy } from '@/constants/db.constants';
+import { errorContainer } from '@/exceptions/error.container';
 
 class UserService {
-  private fastify;
-
   private userDao: IUserDAO;
 
-  private saltRounds = 10;
-
-  constructor(fastify: FastifyInstance, userDao: IUserDAO) {
-    this.fastify = fastify;
+  constructor(userDao: IUserDAO) {
     this.userDao = userDao;
   }
 
-  public async createUser(createData: CreateUserDto): Promise<User> {
-    const checkUserExists = await this.userDao.getUserByEmail(createData.email);
+  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUserDocument> {
+    const userExists = await Promise.all([
+      this.userDao.getUser({ email: createData.email.toLowerCase() }),
+      this.userDao.getUser({ username: createData.username.toLowerCase() })
+    ]);
 
-    if (checkUserExists) {
-      throw this.fastify.httpErrors.conflict('User already exists');
+    if (userExists.length > 0) {
+      const message = userExists[0] ? 'Email already exists' : 'Username already exists';
+
+      throw errorContainer.httpErrors.conflict(message);
     }
 
-    const hashedPassword = await hash(createData.password, this.saltRounds);
-
-    const user = await this.userDao.createUser({ ...createData, password: hashedPassword });
+    const user = await this.userDao.createUser(createData, session);
 
     return user;
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userDao.getUserByEmail(email);
+  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<User> {
+    if (!email && !username) {
+      throw errorContainer.httpErrors.badRequest('Email or username is required');
+    }
+
+    const user = await this.userDao.getUserByEmailOrUsername(email, username);
 
     if (!user) {
-      throw this.fastify.httpErrors.notFound('User not found');
+      throw errorContainer.httpErrors.notFound('User not found');
     }
 
     return user;
@@ -46,7 +47,7 @@ class UserService {
     const user = await this.userDao.getUser(filterBy);
 
     if (!user) {
-      throw this.fastify.httpErrors.notFound('User not found');
+      throw errorContainer.httpErrors.notFound('User not found');
     }
 
     return user;
@@ -64,11 +65,11 @@ class UserService {
     return users;
   }
 
-  public async updateUser(email: string, updateData: UpdateUserDto): Promise<User> {
-    const user = await this.userDao.updateUser(email, updateData);
+  public async updateUser(email: string, updateData: UpdateUserDto, session?: ClientSession): Promise<User> {
+    const user = await this.userDao.updateUser(email, updateData, session);
 
     if (!user) {
-      throw this.fastify.httpErrors.notFound('User not found');
+      throw errorContainer.httpErrors.notFound('User not found');
     }
 
     return user;

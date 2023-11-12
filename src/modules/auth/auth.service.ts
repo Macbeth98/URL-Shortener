@@ -1,42 +1,69 @@
-import { compare } from 'bcrypt';
-
-import { LoginUser } from '@modules/auth/auth.interface';
-
-import { NotFound, Unauthorized } from '@exceptions/error';
-import { FastifyInstance, FastifyReply } from 'fastify';
 import mongoose from 'mongoose';
+import { errorContainer } from '@/exceptions/error.container';
+import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto } from './dtos/auth.dto';
+import UserService from '../user/user.service';
+import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse } from './authProviders/IAuthProvider';
+import { UserTier } from '@/utils/enum.type';
 
 class AuthService {
-  private db: typeof mongoose.connection.db;
+  private authProvider: IAuthProvider;
 
-  constructor(fastify: FastifyInstance) {
-    this.db = fastify.mongo;
+  private userService: UserService;
+
+  constructor(authProvider: IAuthProvider, userService: UserService) {
+    this.authProvider = authProvider;
+    this.userService = userService;
   }
 
-  public async LoginUser(loginData: LoginUser, reply: FastifyReply) {
-    const findUser = await this.db.collection('users').findOne({ email: loginData.email });
+  public async registerUser(userData: RegisterRequestDto): Promise<RegisterResponseDto> {
+    const session = await mongoose.startSession();
 
-    if (!findUser) {
-      throw new NotFound('User not found');
+    session.startTransaction();
+
+    const user = await this.userService.createUser(userData, session);
+
+    let authProviderResponse: IAuthRegisterResponse;
+
+    // Add Auth Provider here.
+    try {
+      authProviderResponse = await this.authProvider.register(userData, user.tier as UserTier);
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+
+      throw error;
+    } finally {
+      session.endSession();
     }
 
-    // compare hashed and password
-    const isPasswordMatching: boolean = await compare(loginData.password, findUser.password).catch(() => false);
+    return {
+      status: 'OK',
+      user,
+      message: authProviderResponse.message,
+      codeDeliveryDetails: authProviderResponse.codeDeliveryDetails
+    };
+  }
 
-    if (!isPasswordMatching) {
-      throw new Unauthorized('Incorrect login credentials');
+  public async loginUser(loginData: LoginRequestDto, clientIp?: string): Promise<LoginResponseDto> {
+    const user = await this.userService.getUser({ email: loginData.email });
+
+    if (!user) {
+      throw errorContainer.httpErrors.notFound('User not found');
     }
 
-    // example jwt
-    const accessToken = await reply.jwtSign(
-      {
-        id: findUser.id,
-        email: findUser.email
-      },
-      { sign: { expiresIn: '15m' } }
-    );
+    // AuthPorvider login here.
+    const authResponse: IAuthLoginResponse = await this.authProvider.login(loginData, clientIp);
 
-    return { accessToken };
+    return {
+      status: 'OK',
+      message: authResponse.message,
+      user,
+      tokenExpiresIn: authResponse.tokenExpiresIn,
+      idToken: authResponse.idToken,
+      accessToken: authResponse.accessToken,
+      refreshToken: authResponse.refreshToken
+    };
   }
 }
 

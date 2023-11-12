@@ -5,7 +5,7 @@ import { Routes } from '@interfaces/routes.interface';
 import AuthController from '@modules/auth/auth.controller';
 import UserController from '@modules/user/user.controller';
 
-import { LoginUserSchema, SignupUserSchema } from '@modules/auth/validationSchemas/auth.schema';
+import { LoginUserSchema, RegisterUserSchema } from '@modules/auth/validationSchemas/auth.schema';
 
 class AuthRoute implements Routes {
   public path = '/auth';
@@ -17,7 +17,7 @@ class AuthRoute implements Routes {
     fastify.route({
       method: 'post',
       url: `${this.path}/signup`,
-      schema: SignupUserSchema,
+      schema: RegisterUserSchema,
       handler: userController.createUser
     });
 
