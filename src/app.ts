@@ -49,7 +49,7 @@ class App {
     try {
       await this.init();
 
-      await this.app.listen({ port: this.app.config.PORT });
+      await this.app.listen({ port: Number(this.app.config.PORT) });
     } catch (err) {
       this.app.log.error(err);
       process.exit(1);
@@ -63,6 +63,7 @@ class App {
   private async init() {
     await this.initializePlugins();
     await this.initializeContainers();
+    await this.initializeJwtPlugin();
     this.initializeRoutes();
     this.initializeErrorHandling();
   }
@@ -78,17 +79,19 @@ class App {
     this.app.register(fastifyCors, { origin: true });
     this.app.register(fastifyHelmet);
     this.app.register(fastifyCompress);
-    this.app.register(fastifySensible);
-    this.app.register(fastifyJwt, { secret: this.app.config.SECRET_KEY });
-    this.app.register(authentication);
+    await this.app.register(fastifySensible);
+    await this.app.register(authentication);
     this.app.register(initSwagger);
   }
 
   private async initializeContainers() {
     await serviceContainer.init(this.app);
     this.app.decorate('serviceContainer', serviceContainer);
-
     errorContainer.init(this.app);
+  }
+
+  private async initializeJwtPlugin() {
+    await this.app.register(fastifyJwt, { secret: serviceContainer.authService.jwtSecret });
   }
 
   private initializeRoutes() {
@@ -107,6 +110,7 @@ class App {
       const message: string = status === 500 ? 'Something went wrong' : error.message ?? 'Something went wrong';
 
       this.app.log.error(`[${request.method}] ${request.url} >> StatusCode:: ${status}, Message:: ${message}`);
+      this.app.log.error(error);
 
       return reply.status(status).send({ status: false, message });
     });

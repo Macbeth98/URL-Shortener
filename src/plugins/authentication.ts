@@ -1,23 +1,21 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
-import { Unauthorized } from '@/exceptions/error.container';
+import { errorContainer } from '@/exceptions/error.container';
 
 export const authentication = fastifyPlugin((fastify: FastifyInstance, _: unknown, done: () => void) => {
   const authPreHandler = async (request: FastifyRequest) => {
     try {
-      const authorization =
-        (request.headers.authorization ? request.headers.authorization?.split('Bearer ')[1] : '') || '';
+      const jwtToken = request.headers.token as string;
 
-      const payload = fastify.jwt.verify(authorization) as { email: string };
+      const payload = await fastify.serviceContainer.authService.verifyJwtToken(jwtToken);
 
-      const getUser = payload.email || ''; // get User from DB or somewhere else.
-      if (!getUser) {
-        throw Error();
+      if (!payload) {
+        throw errorContainer.httpErrors.unauthorized('Unauthorized: Invalid Jwt Token');
       }
 
-      request.user = getUser;
+      request.user = payload;
     } catch (error) {
-      throw new Unauthorized();
+      throw errorContainer.httpErrors.unauthorized('Unauthorized: Invalid Jwt Token');
     }
   };
   fastify.decorate('authenticateUser', authPreHandler);

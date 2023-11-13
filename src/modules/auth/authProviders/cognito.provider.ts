@@ -1,12 +1,15 @@
 import { CognitoUser, CognitoUserAttribute, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import axios from 'axios';
+import jwkToPem from 'jwk-to-pem';
 import {
   IAttribute,
   IAuthForgotPasswordResponse,
   IAuthLoginResponse,
   IAuthProvider,
   IAuthRegisterResponse,
-  IAuthResetPasswordResponse
+  IAuthResetPasswordResponse,
+  IAuthUser
 } from './IAuthProvider';
 import { serviceContainer } from '@/modules/containers/service.container';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
@@ -17,20 +20,27 @@ export class CognitoAuthProvider implements IAuthProvider {
 
   private cognitoIdentityServiceProvider: CognitoIdentityServiceProvider;
 
-  private httpErrors = serviceContainer.httpErrors;
-
   private config = serviceContainer.config;
 
   private logger = serviceContainer.logger;
+
+  private jwt = serviceContainer.jwt;
+
+  private cognitoEndpoint: string;
 
   constructor() {
     this.userPool = new CognitoUserPool({
       UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
       ClientId: this.config.AWS_COGNITO_CLIENT_ID
     });
+
+    const authority = `https://cognito-idp.${this.config.AWS_REGION}.amazonaws.com/${this.config.AWS_COGNITO_USER_POOL_ID}`;
+
+    this.cognitoEndpoint = `${authority}/.well-known/jwks.json`;
+
     this.cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider({
       region: this.config.AWS_REGION,
-      endpoint: `https://cognito-idp.${this.config.AWS_REGION}.amazonaws.com/${this.config.AWS_COGNITO_USER_POOL_ID}`
+      endpoint: authority
     });
   }
 
@@ -239,6 +249,29 @@ export class CognitoAuthProvider implements IAuthProvider {
 
         this.logger.info(result, 'CognitoAuthService.deleteUser');
         resolve(true);
+      });
+    });
+  }
+
+  public async jwtSecret(): Promise<string> {
+    const cognitoData = await axios.get(this.cognitoEndpoint);
+    const keys = cognitoData.data.keys[0];
+    const pem = jwkToPem(keys);
+
+    return pem;
+  }
+
+  public async verifyJwtToken(token: string): Promise<IAuthUser> {
+    return new Promise((resolve, reject) => {
+      this.jwt.verify(token, (err, decoded) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        this.logger.info(decoded, 'CognitoAuthService.verifyJwtToken');
+
+        resolve(decoded);
       });
     });
   }

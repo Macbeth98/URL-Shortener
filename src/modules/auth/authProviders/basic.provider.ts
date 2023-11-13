@@ -6,7 +6,8 @@ import {
   IAuthLoginResponse,
   IAuthProvider,
   IAuthRegisterResponse,
-  IAuthResetPasswordResponse
+  IAuthResetPasswordResponse,
+  IAuthUser
 } from './IAuthProvider';
 import { serviceContainer } from '@/modules/containers/service.container';
 
@@ -17,7 +18,11 @@ export class BasicAuthProvider implements IAuthProvider {
 
   private httpErrors = serviceContainer.httpErrors;
 
-  private fastify = serviceContainer.fastify;
+  private jwt = serviceContainer.jwt;
+
+  private config = serviceContainer.config;
+
+  private logger = serviceContainer.logger;
 
   public async register(signupUserDto: RegisterRequestDto): Promise<IAuthRegisterResponse> {
     const { email, password, tier } = signupUserDto;
@@ -64,9 +69,9 @@ export class BasicAuthProvider implements IAuthProvider {
       tier: user.tier
     };
 
-    const idToken = this.fastify.jwt.sign(payload, { expiresIn: '60m' });
+    const idToken = this.jwt.sign(payload, { expiresIn: '60m' });
 
-    const refreshToken = this.fastify.jwt.sign(payload, { expiresIn: '30d' });
+    const refreshToken = this.jwt.sign(payload, { expiresIn: '30d' });
 
     return {
       status: true,
@@ -134,6 +139,15 @@ export class BasicAuthProvider implements IAuthProvider {
     return true;
   }
 
+  public async jwtSecret(): Promise<string> {
+    return this.config.SECRET_KEY;
+  }
+
+  public async verifyJwtToken(token: string): Promise<IAuthUser> {
+    const payload = this.jwt.verify(token) as IAuthUser;
+    return payload;
+  }
+
   private async sendEmailVerification(email: string) {
     // send email verification
     return {
@@ -144,7 +158,7 @@ export class BasicAuthProvider implements IAuthProvider {
   }
 
   private async sendResetPasswordEmail(email: string, code: string) {
-    this.fastify.log.info(`Reset password code: ${code}`);
+    this.logger.info(`Reset password code: ${code}`);
     // send email verification
     return {
       AttributeName: 'email',

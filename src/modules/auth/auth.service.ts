@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { errorContainer } from '@/exceptions/error.container';
 import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto } from './dtos/auth.dto';
 import UserService from '../user/user.service';
-import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse } from './authProviders/IAuthProvider';
+import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse, IAuthUser } from './authProviders/IAuthProvider';
 import { UserTier } from '@/utils/enum.type';
 
 class AuthService {
@@ -64,6 +64,14 @@ class AuthService {
       accessToken: authResponse.accessToken,
       refreshToken: authResponse.refreshToken
     };
+  }
+
+  public async jwtSecret(): Promise<string> {
+    return this.authProvider.jwtSecret();
+  }
+
+  public async verifyJwtToken(token: string): Promise<IAuthUser> {
+    return this.authProvider.verifyJwtToken(token);
   }
 }
 

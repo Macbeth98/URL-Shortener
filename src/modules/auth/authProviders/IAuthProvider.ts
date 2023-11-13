@@ -39,6 +39,11 @@ export interface IAttribute {
   [key: string]: string;
 }
 
+export interface IAuthUser {
+  email: string;
+  tier: UserTier;
+}
+
 export interface IAuthProvider {
   register: (signupUserDto: RegisterRequestDto, tier: UserTier) => Promise<IAuthRegisterResponse>;
 
@@ -53,4 +58,8 @@ export interface IAuthProvider {
   updateUserAttributes: (email: string, attributes: IAttribute) => Promise<boolean>;
 
   deleteUser: (email: string) => Promise<boolean>;
+
+  jwtSecret: () => Promise<string>;
+
+  verifyJwtToken: (token: string) => Promise<IAuthUser>;
 }

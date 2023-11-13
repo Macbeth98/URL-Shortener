@@ -12,6 +12,8 @@ export class ServiceContainer {
 
   logger!: FastifyInstance['log'];
 
+  jwt!: FastifyInstance['jwt'];
+
   httpErrors!: HttpErrors;
 
   userService!: UserService;
@@ -22,6 +24,7 @@ export class ServiceContainer {
     this.fastify = fastify;
     this.config = fastify.config;
     this.logger = fastify.log;
+    this.jwt = fastify.jwt;
     this.httpErrors = fastify.httpErrors;
 
     this.userService = (await UserModule.register()).userService;

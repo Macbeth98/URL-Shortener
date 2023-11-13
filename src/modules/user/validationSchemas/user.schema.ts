@@ -46,6 +46,13 @@ export const CreateUserSchema: FastifySchema = {
 export const GetUserSchema: FastifySchema = {
   description: 'Get user api',
   tags: ['user'],
+  querystring: {
+    type: 'object',
+    properties: {
+      email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } }),
+      username: Type.String({ minLength: 3, maxLength: 20 })
+    }
+  },
   response: {
     200: {
       description: 'Successful get response',

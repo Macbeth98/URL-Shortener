@@ -1,6 +1,7 @@
 import UserService from '../user/user.service';
 import AuthService from './auth.service';
-import { CognitoAuthProvider } from './authProviders/cognito.provider';
+import { BasicAuthProvider } from './authProviders/basic.provider';
+// import { CognitoAuthProvider } from './authProviders/cognito.provider';
 
 export class AuthModule {
   public authService: AuthService;
@@ -10,7 +11,7 @@ export class AuthModule {
   }
 
   static async register(userService: UserService) {
-    const authService = new AuthService(new CognitoAuthProvider(), userService);
+    const authService = new AuthService(new BasicAuthProvider(), userService);
     return new AuthModule(authService);
   }
 }
