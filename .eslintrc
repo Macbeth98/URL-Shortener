@@ -18,6 +18,16 @@
     "import/no-named-as-default-member": 0,
     "import/no-unresolved": 0,
     "import/prefer-default-export": 0,
+    "import/extensions": [
+      2,
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "sort-imports": [
       1,
       {
@@ -138,6 +148,8 @@
     "prefer-rest-params": ["error"],
     "prefer-template": ["error"],
     "template-curly-spacing": ["error", "never"],
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off"
   }
 }

@@ -1,17 +1,17 @@
 import { ClientSession } from 'mongoose';
 import { OrderValueBy } from '@/constants/db.constants';
 import { CreateUserDto, UserResponseDto } from '../dtos/user.dto';
-import { IUserDocument } from '../interfaces/user.interface';
-import { IUserDAO } from './IUserDAO';
+import { IUser } from '../interfaces/user.interface';
+import { IUserDAO } from '../interfaces/user-dao.interface';
 import { UserModel } from '../modelSchemas/user.model';
 
 export class MongoUserDAO implements IUserDAO {
-  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUserDocument> {
+  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUser> {
     const userDocument = await new UserModel(createData).save({ session });
     return userDocument;
   }
 
-  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<IUserDocument | null> {
+  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<IUser | null> {
     const or = [];
     if (email) {
       or.push({ email: email.toLowerCase() });
@@ -24,7 +24,7 @@ export class MongoUserDAO implements IUserDAO {
     return userDocument;
   }
 
-  public async getUser(filterBy: { email?: string; username?: string }): Promise<IUserDocument | null> {
+  public async getUser(filterBy: { email?: string; username?: string }): Promise<IUser | null> {
     const userDocument = await UserModel.findOne(filterBy);
     return userDocument;
   }
@@ -35,7 +35,7 @@ export class MongoUserDAO implements IUserDAO {
     limit: number,
     sortBy: string,
     order: OrderValueBy
-  ): Promise<IUserDocument[]> {
+  ): Promise<IUser[]> {
     const userDocuments = await UserModel.find(filterBy)
       .skip(skip)
       .limit(limit)
@@ -47,7 +47,7 @@ export class MongoUserDAO implements IUserDAO {
     email: string,
     updateData: Partial<Omit<CreateUserDto, 'email' | 'password'>>,
     session?: ClientSession
-  ): Promise<IUserDocument | null> {
+  ): Promise<IUser | null> {
     const userDocument = await UserModel.findOneAndUpdate({ email: email.toLowerCase() }, updateData, {
       new: true,
       session

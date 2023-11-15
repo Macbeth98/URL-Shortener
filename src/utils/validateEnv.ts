@@ -7,5 +7,8 @@ export const schema = Type.Object({
   SECRET_KEY: Type.String(),
   AWS_COGNITO_USER_POOL_ID: Type.String(),
   AWS_COGNITO_CLIENT_ID: Type.String(),
-  AWS_REGION: Type.String()
+  AWS_REGION: Type.String(),
+  SHORT_URL: Type.String()
 });
+
+export const typeBoxEnvSchema = schema;

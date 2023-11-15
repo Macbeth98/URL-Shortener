@@ -4,7 +4,9 @@ import { CreateUserBodySchema, UserResponseSchema } from '@/modules/user/validat
 
 export interface CreateUserDto extends Static<typeof CreateUserBodySchema> {}
 
-export interface UserResponseDto extends Static<typeof UserResponseSchema> {}
+export interface UserResponseDto extends Omit<Static<typeof UserResponseSchema>, 'createdAt'> {
+  createdAt: Date;
+}
 
 export type UpdateUserDto = Partial<Omit<CreateUserDto, 'email' | 'password'>>;
 

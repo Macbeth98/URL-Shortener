@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
-import { UserTier } from '@/utils/enum.type';
+import { userSchema } from '../modelSchemas/user.model';
 
-export interface User {
+export interface IUser {
+  _id?: string | mongoose.Types.ObjectId | object;
   username: string;
   email: string;
-  tier: UserTier;
-  createdAt: string;
-  updatedAt?: string;
+  displayUsername: string;
+  tier: string;
+  createdAt: Date;
+  updatedAt?: Date;
 }
 
-export interface IUserDocument extends mongoose.Document, User {}
+export interface IUserDocument extends mongoose.InferSchemaType<typeof userSchema> {}

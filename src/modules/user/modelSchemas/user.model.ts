@@ -5,7 +5,7 @@ export const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       trim: true,
       lowercase: true,
@@ -14,7 +14,7 @@ export const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       trim: true,
       lowercase: true,
@@ -23,7 +23,7 @@ export const userSchema = new mongoose.Schema(
     },
     displayUsername: {
       type: String,
-      require: true,
+      required: true,
       trim: true
     },
     tier: {

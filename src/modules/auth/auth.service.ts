@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { errorContainer } from '@/exceptions/error.container';
 import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto } from './dtos/auth.dto';
 import UserService from '../user/user.service';
-import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse, IAuthUser } from './authProviders/IAuthProvider';
+import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse, IAuthUser } from './interfaces/auth.interface';
 import { UserTier } from '@/utils/enum.type';
 
 class AuthService {
@@ -39,7 +39,7 @@ class AuthService {
 
     return {
       status: 'OK',
-      user,
+      user: { ...user, createdAt: user.createdAt.toISOString() },
       message: authProviderResponse.message,
       codeDeliveryDetails: authProviderResponse.codeDeliveryDetails
     };
@@ -58,7 +58,7 @@ class AuthService {
     return {
       status: 'OK',
       message: authResponse.message,
-      user,
+      user: { ...user, createdAt: user.createdAt.toISOString() },
       tokenExpiresIn: authResponse.tokenExpiresIn,
       idToken: authResponse.idToken,
       accessToken: authResponse.accessToken,

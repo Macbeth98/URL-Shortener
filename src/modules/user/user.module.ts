@@ -1,4 +1,4 @@
-import { IUserDAO } from './daos/IUserDAO';
+import { IUserDAO } from './interfaces/user-dao.interface';
 import { MongoUserDAO } from './daos/mongo-user.dao';
 import UserService from './user.service';
 

@@ -8,7 +8,7 @@ import {
   IAuthRegisterResponse,
   IAuthResetPasswordResponse,
   IAuthUser
-} from './IAuthProvider';
+} from '../interfaces/auth.interface';
 import { serviceContainer } from '@/modules/containers/service.container';
 
 export class BasicAuthProvider implements IAuthProvider {

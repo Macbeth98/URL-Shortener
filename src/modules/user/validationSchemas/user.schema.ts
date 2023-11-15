@@ -10,10 +10,10 @@ export const CreateUserBodySchema = Type.Object({
 });
 
 export const UserResponseSchema = Type.Object({
-  _id: Type.Optional(Type.String({ pattern: '^[0-9a-fA-F]{24}$' })),
+  _id: Type.Optional(Type.String({ pattern: '^[0-9a-fA-F]{24}$' }) || Type.Object({})),
   username: Type.String({ minLength: 3, maxLength: 20 }),
   email: Type.String({ format: 'email' }),
-  tier: Type.Enum(UserTier, { default: UserTier.FREE, description: 'Displays the Current User Tier' }),
+  tier: Type.String(Type.Enum(UserTier, { default: UserTier.FREE, description: 'Displays the Current User Tier' })),
   createdAt: Type.String({ format: 'date-time' })
 });
 
@@ -46,19 +46,12 @@ export const CreateUserSchema: FastifySchema = {
 export const GetUserSchema: FastifySchema = {
   description: 'Get user api',
   tags: ['user'],
-  querystring: {
-    type: 'object',
-    properties: {
-      email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } }),
-      username: Type.String({ minLength: 3, maxLength: 20 })
-    }
-  },
   response: {
     200: {
       description: 'Successful get response',
       type: 'object',
       properties: {
-        data: { type: 'object', properties: UserResponseSchema.properties }
+        ...UserResponseSchema.properties
       }
     },
     400: ERROR400,

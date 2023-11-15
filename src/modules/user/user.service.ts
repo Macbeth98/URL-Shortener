@@ -1,7 +1,7 @@
 import { ClientSession } from 'mongoose';
 import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from './dtos/user.dto';
-import { IUserDAO } from './daos/IUserDAO';
-import { IUserDocument, User } from './interfaces/user.interface';
+import { IUserDAO } from './interfaces/user-dao.interface';
+import { IUser } from './interfaces/user.interface';
 import { OrderValueBy } from '@/constants/db.constants';
 import { errorContainer } from '@/exceptions/error.container';
 
@@ -12,7 +12,7 @@ class UserService {
     this.userDao = userDao;
   }
 
-  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUserDocument> {
+  public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUser> {
     const userExists = await Promise.all([
       this.userDao.getUser({ email: createData.email.toLowerCase() }),
       this.userDao.getUser({ username: createData.username.toLowerCase() })
@@ -29,7 +29,7 @@ class UserService {
     return user;
   }
 
-  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<User> {
+  public async getUserByEmailOrUsername(email?: string, username?: string): Promise<IUser> {
     if (!email && !username) {
       throw errorContainer.httpErrors.badRequest('Email or username is required');
     }
@@ -43,7 +43,7 @@ class UserService {
     return user;
   }
 
-  public async getUser(filterBy: { email?: string; username?: string }): Promise<User> {
+  public async getUser(filterBy: { email?: string; username?: string }): Promise<IUser> {
     const user = await this.userDao.getUser(filterBy);
 
     if (!user) {
@@ -59,13 +59,13 @@ class UserService {
     limit: number,
     sortBy: string,
     order: OrderValueBy
-  ): Promise<User[]> {
+  ): Promise<IUser[]> {
     const users = await this.userDao.getAllUsers(filterBy, skip, limit, sortBy, order);
 
     return users;
   }
 
-  public async updateUser(email: string, updateData: UpdateUserDto, session?: ClientSession): Promise<User> {
+  public async updateUser(email: string, updateData: UpdateUserDto, session?: ClientSession): Promise<IUser> {
     const user = await this.userDao.updateUser(email, updateData, session);
 
     if (!user) {

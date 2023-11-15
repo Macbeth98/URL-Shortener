@@ -10,7 +10,7 @@ import {
   IAuthRegisterResponse,
   IAuthResetPasswordResponse,
   IAuthUser
-} from './IAuthProvider';
+} from '../interfaces/auth.interface';
 import { serviceContainer } from '@/modules/containers/service.container';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
 import { UserTier } from '@/utils/enum.type';

@@ -8,7 +8,7 @@ import {
 
 export interface RegisterRequestDto extends Static<typeof RegisterUserBodySchema> {}
 
-export interface RegisterResponseDto extends Static<typeof RegisterUserResponseSchema> {}
+export interface RegisterResponseDto extends Omit<Static<typeof RegisterUserResponseSchema>, 'user.createdAt'> {}
 
 export interface LoginRequestDto extends Static<typeof LoginUserBodySchema> {}
 

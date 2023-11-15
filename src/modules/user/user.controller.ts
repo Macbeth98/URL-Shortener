@@ -17,7 +17,7 @@ class UserController {
   };
 
   public getUser = async (req: FastifyRequest) => {
-    const email = req.user as string;
+    const { email } = req.user;
 
     const user = await this.userService.getUser({ email });
 
@@ -25,7 +25,7 @@ class UserController {
   };
 
   public updateUser = async (req: FastifyRequest<{ Body: UpdateUserDto }>) => {
-    const email = req.user as string;
+    const { email } = req.user;
     const updateData = req.body;
 
     const user = await this.userService.updateUser(email, updateData);
