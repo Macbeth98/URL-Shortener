@@ -12,8 +12,10 @@ export const initSwagger = fastifyPlugin((fastify: FastifyInstance, _: unknown, 
         version: '1.0.0'
       },
       tags: [
+        { name: 'default', description: 'PING' },
         { name: 'auth', description: 'Authentication end-points' },
-        { name: 'user', description: 'User related end-points' }
+        { name: 'user', description: 'User related end-points' },
+        { name: 'url', description: 'URL related end-points (Shortening of Url)' }
       ],
       consumes: ['application/json'],
       produces: ['application/json'],

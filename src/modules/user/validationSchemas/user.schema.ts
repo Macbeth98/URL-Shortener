@@ -6,7 +6,9 @@ import { UserTier } from '@/utils/enum.type';
 export const CreateUserBodySchema = Type.Object({
   username: Type.String({ minLength: 3, maxLength: 20 }),
   email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } }),
-  tier: Type.Optional(Type.Enum(UserTier, { default: UserTier.FREE, description: 'Sets the User Tier' }))
+  tier: Type.Optional(
+    Type.Enum(UserTier, { default: UserTier.FREE, description: 'Sets the User Tier. User Tiers: FREE | PRO | PREMIUM' })
+  )
 });
 
 export const UserResponseSchema = Type.Object({

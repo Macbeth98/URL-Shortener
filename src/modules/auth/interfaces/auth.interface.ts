@@ -1,5 +1,6 @@
 import { UserTier } from '@/utils/enum.type';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
+import { AbstractAuthProvider } from '../authProviders/abstract.provider';
 
 export interface IAuthRegisterResponse {
   status: boolean;
@@ -64,3 +65,5 @@ export interface IAuthProvider {
 
   verifyJwtToken: (token: string) => Promise<IAuthUser>;
 }
+
+export type AuthProvider = AbstractAuthProvider & IAuthProvider;

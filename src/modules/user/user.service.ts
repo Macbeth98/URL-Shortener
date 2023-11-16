@@ -13,14 +13,22 @@ class UserService {
   }
 
   public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUser> {
-    const userExists = await Promise.all([
+    const [emailUserExists, usernameUserExists] = await Promise.all([
       this.userDao.getUser({ email: createData.email.toLowerCase() }),
       this.userDao.getUser({ username: createData.username.toLowerCase() })
     ]);
 
-    if (userExists.length > 0) {
-      const message = userExists[0] ? 'Email already exists' : 'Username already exists';
+    let message = '';
 
+    if (emailUserExists && usernameUserExists) {
+      message = 'Email and username already exists';
+    } else if (emailUserExists) {
+      message = 'Email already exists';
+    } else if (usernameUserExists) {
+      message = 'Username already exists';
+    }
+
+    if (message.length > 1) {
       throw errorContainer.httpErrors.conflict(message);
     }
 

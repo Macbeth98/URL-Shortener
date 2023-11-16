@@ -2,11 +2,17 @@ import mongoose from 'mongoose';
 import { errorContainer } from '@/exceptions/error.container';
 import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto } from './dtos/auth.dto';
 import UserService from '../user/user.service';
-import { IAuthLoginResponse, IAuthProvider, IAuthRegisterResponse, IAuthUser } from './interfaces/auth.interface';
+import {
+  AuthProvider,
+  IAuthLoginResponse,
+  IAuthProvider,
+  IAuthRegisterResponse,
+  IAuthUser
+} from './interfaces/auth.interface';
 import { UserTier } from '@/utils/enum.type';
 
 class AuthService {
-  private authProvider: IAuthProvider;
+  private authProvider: AuthProvider;
 
   private userService: UserService;
 
@@ -20,7 +26,11 @@ class AuthService {
 
     session.startTransaction();
 
+    userData.displayUsername = userData.username;
+
     const user = await this.userService.createUser(userData, session);
+
+    userData._id = user._id;
 
     let authProviderResponse: IAuthRegisterResponse;
 
@@ -39,7 +49,13 @@ class AuthService {
 
     return {
       status: 'OK',
-      user: { ...user, createdAt: user.createdAt.toISOString() },
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        tier: user.tier,
+        createdAt: user.createdAt.toISOString()
+      },
       message: authProviderResponse.message,
       codeDeliveryDetails: authProviderResponse.codeDeliveryDetails
     };
@@ -58,7 +74,13 @@ class AuthService {
     return {
       status: 'OK',
       message: authResponse.message,
-      user: { ...user, createdAt: user.createdAt.toISOString() },
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        tier: user.tier,
+        createdAt: user.createdAt.toISOString()
+      },
       tokenExpiresIn: authResponse.tokenExpiresIn,
       idToken: authResponse.idToken,
       accessToken: authResponse.accessToken,

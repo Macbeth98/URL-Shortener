@@ -18,7 +18,7 @@ export const RegisterUserBodySchema = Type.Object({
 
 export const RegisterUserResponseSchema = Type.Object({
   status: Type.String({ default: 'OK' }),
-  user: UserResponseSchema,
+  user: Type.Object({ ...UserResponseSchema.properties }),
   message: Type.String({ default: 'User created successfully' }),
   codeDeliveryDetails: Type.Object({
     AttributeName: Type.String({ description: 'Code or link' }),

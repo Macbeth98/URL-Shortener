@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox';
+import { Type, Static } from '@sinclair/typebox';
 
 export const schema = Type.Object({
   NODE_ENV: Type.String(),
@@ -12,3 +12,4 @@ export const schema = Type.Object({
 });
 
 export const typeBoxEnvSchema = schema;
+export interface IConfig extends Static<typeof schema> {}

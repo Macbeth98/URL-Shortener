@@ -7,7 +7,8 @@ import { UserModel } from '../modelSchemas/user.model';
 
 export class MongoUserDAO implements IUserDAO {
   public async createUser(createData: CreateUserDto, session?: ClientSession): Promise<IUser> {
-    const userDocument = await new UserModel(createData).save({ session });
+    const userDocument = new UserModel(createData);
+    await userDocument.save({ session });
     return userDocument;
   }
 

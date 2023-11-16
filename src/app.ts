@@ -64,8 +64,8 @@ class App {
 
   private async init() {
     await this.initializePlugins();
-    await this.initializeContainers();
     await this.initializeJwtPlugin();
+    await this.initializeContainers();
     this.initializeRoutes();
     this.initializeErrorHandling();
   }
@@ -95,7 +95,11 @@ class App {
   }
 
   private async initializeJwtPlugin() {
-    await this.app.register(fastifyJwt, { secret: serviceContainer.authService.jwtSecret });
+    await this.app.register(fastifyJwt, {
+      secret: () => {
+        return serviceContainer.jwtSecret(this.app.config);
+      }
+    });
   }
 
   private initializeRoutes() {
@@ -111,7 +115,14 @@ class App {
       }
 
       const status: number = error.statusCode ?? 500;
-      const message: string = status === 500 ? 'Something went wrong' : error.message ?? 'Something went wrong';
+      // const message: string = status === 500 ? 'Something went wrong' : error.message ?? 'Something went wrong';
+      let message: string = 'Something went wrong';
+
+      if (error.message) {
+        message = error.message;
+      } else if (error.validation) {
+        message = error.validation[0].message;
+      }
 
       this.app.log.error(`[${request.method}] ${request.url} >> StatusCode:: ${status}, Message:: ${message}`);
       this.app.log.error(error);

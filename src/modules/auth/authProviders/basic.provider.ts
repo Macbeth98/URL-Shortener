@@ -1,4 +1,7 @@
 import { compare, hash } from 'bcrypt';
+import mongoose from 'mongoose';
+import { HttpErrors } from '@fastify/sensible';
+import { JWT } from '@fastify/jwt';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
 import {
   IAttribute,
@@ -9,20 +12,32 @@ import {
   IAuthResetPasswordResponse,
   IAuthUser
 } from '../interfaces/auth.interface';
-import { serviceContainer } from '@/modules/containers/service.container';
+import { ServiceContainer } from '@/modules/containers/service.container';
+import { ILogger } from '@/interfaces/logger.interface';
+import { IConfig } from '@/utils/validateEnv';
+import { AbstractAuthProvider } from './abstract.provider';
 
-export class BasicAuthProvider implements IAuthProvider {
+export class BasicAuthProvider extends AbstractAuthProvider implements IAuthProvider {
   private saltRounds = 10;
 
-  private db = serviceContainer.fastify.mongo;
+  private db: mongoose.mongo.Db;
 
-  private httpErrors = serviceContainer.httpErrors;
+  private httpErrors: HttpErrors;
 
-  private jwt = serviceContainer.jwt;
+  private jwt: JWT;
 
-  private config = serviceContainer.config;
+  private config: IConfig;
 
-  private logger = serviceContainer.logger;
+  private logger: ILogger;
+
+  constructor(serviceContainer: ServiceContainer) {
+    super();
+    this.db = serviceContainer.fastify.mongo;
+    this.httpErrors = serviceContainer.httpErrors;
+    this.jwt = serviceContainer.jwt;
+    this.config = serviceContainer.config;
+    this.logger = serviceContainer.logger;
+  }
 
   public async register(signupUserDto: RegisterRequestDto): Promise<IAuthRegisterResponse> {
     const { email, password, tier } = signupUserDto;
@@ -74,9 +89,9 @@ export class BasicAuthProvider implements IAuthProvider {
       userId: user.userId
     };
 
-    const idToken = this.jwt.sign(payload, { expiresIn: '60m' });
+    const idToken = await this.jwt.sign(payload, { expiresIn: '60m' });
 
-    const refreshToken = this.jwt.sign(payload, { expiresIn: '30d' });
+    const refreshToken = await this.jwt.sign(payload, { expiresIn: '30d' });
 
     return {
       status: true,
@@ -144,8 +159,12 @@ export class BasicAuthProvider implements IAuthProvider {
     return true;
   }
 
+  public static async jwtSecret(config: IConfig): Promise<string> {
+    return config.SECRET_KEY;
+  }
+
   public async jwtSecret(): Promise<string> {
-    return this.config.SECRET_KEY;
+    return BasicAuthProvider.jwtSecret(this.config);
   }
 
   public async verifyJwtToken(token: string): Promise<IAuthUser> {

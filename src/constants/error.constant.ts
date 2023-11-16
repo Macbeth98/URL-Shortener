@@ -1,4 +1,8 @@
 export const responseProperty = {
+  status: {
+    type: 'boolean',
+    nullable: true
+  },
   message: {
     type: 'string'
   }

@@ -14,8 +14,10 @@ import {
 import { serviceContainer } from '@/modules/containers/service.container';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
 import { UserTier } from '@/utils/enum.type';
+import { AbstractAuthProvider } from './abstract.provider';
+import { IConfig } from '@/utils/validateEnv';
 
-export class CognitoAuthProvider implements IAuthProvider {
+export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthProvider {
   private userPool: CognitoUserPool;
 
   private cognitoIdentityServiceProvider: CognitoIdentityServiceProvider;
@@ -29,6 +31,7 @@ export class CognitoAuthProvider implements IAuthProvider {
   private cognitoEndpoint: string;
 
   constructor() {
+    super();
     this.userPool = new CognitoUserPool({
       UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
       ClientId: this.config.AWS_COGNITO_CLIENT_ID
@@ -259,12 +262,20 @@ export class CognitoAuthProvider implements IAuthProvider {
     });
   }
 
-  public async jwtSecret(): Promise<string> {
-    const cognitoData = await axios.get(this.cognitoEndpoint);
+  public static async jwtSecret(config: IConfig): Promise<string> {
+    const authority = `https://cognito-idp.${config.AWS_REGION}.amazonaws.com/${config.AWS_COGNITO_USER_POOL_ID}`;
+
+    const cognitoEndpoint = `${authority}/.well-known/jwks.json`;
+
+    const cognitoData = await axios.get(cognitoEndpoint);
     const keys = cognitoData.data.keys[0];
     const pem = jwkToPem(keys);
 
     return pem;
+  }
+
+  public async jwtSecret(): Promise<string> {
+    return CognitoAuthProvider.jwtSecret(this.config);
   }
 
   public async verifyJwtToken(token: string): Promise<IAuthUser> {

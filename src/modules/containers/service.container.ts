@@ -6,6 +6,7 @@ import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { UrlService } from '../url/url.service';
 import { UrlModule } from '../url/url.module';
+import { IConfig } from '@/utils/validateEnv';
 
 /**
  * @dev This class is used to store all the services that are used in the application.
@@ -31,6 +32,8 @@ export class ServiceContainer {
 
   jwt!: FastifyInstance['jwt'];
 
+  jwtSecret!: (config: IConfig) => Promise<string>;
+
   httpErrors!: HttpErrors;
 
   userService!: UserService;
@@ -38,6 +41,10 @@ export class ServiceContainer {
   authService!: AuthService;
 
   urlService!: UrlService;
+
+  constructor() {
+    this.jwtSecret = AuthModule.jwtSecret;
+  }
 
   public async init(fastify: FastifyInstance) {
     this.fastify = fastify;
@@ -47,7 +54,7 @@ export class ServiceContainer {
     this.httpErrors = fastify.httpErrors;
 
     this.userService = (await UserModule.register()).userService;
-    this.authService = (await AuthModule.register(this.userService)).authService;
+    this.authService = (await AuthModule.register(this.userService, this)).authService;
     this.urlService = (await UrlModule.register(this.initialUrlCounter, fastify.mongo, this.userService)).urlService;
   }
 }
