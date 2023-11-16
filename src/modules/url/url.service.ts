@@ -127,4 +127,20 @@ export class UrlService {
     const urlDocument = await this.urlDao.getUrl(alias);
     return urlDocument.url;
   }
+
+  public async getCreatedUrlCounts(filter: Partial<IUrl>, skip: number, limit: number) {
+    if (!skip) {
+      skip = 0;
+    }
+    if (!limit) {
+      limit = 50;
+    }
+    const counts = await this.urlDao.getCreatedUrlCounts(filter, skip, limit);
+    return counts;
+  }
+
+  public async incrementClicks(alias: string) {
+    const urlDocument = await this.urlDao.updateClicks(alias);
+    return urlDocument;
+  }
 }

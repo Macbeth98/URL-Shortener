@@ -26,9 +26,12 @@ export class BasicAuthProvider implements IAuthProvider {
 
   public async register(signupUserDto: RegisterRequestDto): Promise<IAuthRegisterResponse> {
     const { email, password, tier } = signupUserDto;
+
+    const userId = signupUserDto._id.toString();
+
     const hashedPassword = await hash(password, this.saltRounds);
 
-    await this.db.collection('auth').insertOne({ email, password: hashedPassword, tier });
+    await this.db.collection('auth').insertOne({ email, password: hashedPassword, tier, userId });
 
     return {
       status: true,
@@ -52,6 +55,7 @@ export class BasicAuthProvider implements IAuthProvider {
       email: string;
       password: string;
       tier: string;
+      userId: string;
     };
 
     if (!user) {
@@ -66,7 +70,8 @@ export class BasicAuthProvider implements IAuthProvider {
 
     const payload = {
       email: user.email,
-      tier: user.tier
+      tier: user.tier,
+      userId: user.userId
     };
 
     const idToken = this.jwt.sign(payload, { expiresIn: '60m' });

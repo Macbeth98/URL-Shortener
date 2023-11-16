@@ -5,5 +5,6 @@ export interface IUrlDAO {
   getUrl(shortUrl: string): Promise<IUrl | null>;
   getUrlsByUserId(userId: string): Promise<IUrl[]>;
   getUrls(filter: Partial<IUrl>, skip: number, limit: number): Promise<IUrl[]>;
-  updateClicks(shortUrl: string): Promise<IUrl | null>;
+  updateClicks(alias: string): Promise<IUrl | null>;
+  getCreatedUrlCounts(filter: Partial<IUrl>, skip: number, limit: number): Promise<number>;
 }

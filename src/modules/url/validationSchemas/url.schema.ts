@@ -1,6 +1,6 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { FastifySchema } from 'fastify';
-import { ERROR400, ERROR401, ERROR409, ERROR500 } from '@/constants/error.constants';
+import { ERROR400, ERROR401, ERROR409, ERROR500 } from '@/constants/error.constant';
 
 export const CreateUrlRequestSchema = Type.Object({
   url: Type.String({ format: 'regex', pattern: '^(https?://)', errorMessage: { format: 'Invalid URL' } }),
@@ -16,7 +16,7 @@ export const CreateUrlResponseSchema = Type.Object({
   )
 });
 
-export const GetUrlParamsSchema = Type.Object({
+export const ProcessUrlParamsSchema = Type.Object({
   alias: Type.Optional(Type.String({ description: 'The alias for the URL' }))
 });
 
@@ -106,7 +106,7 @@ export const ProcessUrlSchema: FastifySchema = {
   summary: 'Process a Shortened URL',
   params: {
     type: 'object',
-    properties: GetUrlParamsSchema.properties
+    properties: ProcessUrlParamsSchema.properties
   },
   response: {
     302: {

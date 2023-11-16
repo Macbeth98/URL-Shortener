@@ -7,4 +7,7 @@ export interface IUrl {
   userId: string | mongoose.Types.ObjectId | object;
   customAlias: boolean;
   clicks: number;
+  day?: number;
+  month?: number;
+  year?: number;
 }

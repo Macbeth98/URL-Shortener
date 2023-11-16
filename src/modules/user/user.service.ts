@@ -2,7 +2,7 @@ import { ClientSession } from 'mongoose';
 import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from './dtos/user.dto';
 import { IUserDAO } from './interfaces/user-dao.interface';
 import { IUser } from './interfaces/user.interface';
-import { OrderValueBy } from '@/constants/db.constants';
+import { OrderValueBy } from '@/constants/db.constant';
 import { errorContainer } from '@/exceptions/error.container';
 
 class UserService {

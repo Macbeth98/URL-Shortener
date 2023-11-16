@@ -13,18 +13,23 @@ export class MongoUrlDAO implements IUrlDAO {
     return urlDocument;
   }
 
-  getUrlsByUserId(userId: string): Promise<IUrl[]> {
-    const urls = UrlModel.find({ userId });
+  public async getUrlsByUserId(userId: string): Promise<IUrl[]> {
+    const urls = await UrlModel.find({ userId });
     return urls;
   }
 
-  getUrls(filter: Partial<IUrl>, skip: number, limit: number): Promise<IUrl[]> {
-    const urls = UrlModel.find(filter).skip(skip).limit(limit);
+  public async getUrls(filter: Partial<IUrl>, skip: number, limit: number): Promise<IUrl[]> {
+    const urls = await UrlModel.find(filter).skip(skip).limit(limit);
     return urls;
   }
 
-  updateClicks(shortUrl: string): Promise<IUrl> {
-    const updatedDoc = UrlModel.findOneAndUpdate({ shortUrl }, { $inc: { clicks: 1 } }, { new: true });
+  public async updateClicks(alias: string): Promise<IUrl> {
+    const updatedDoc = await UrlModel.findOneAndUpdate({ alias }, { $inc: { clicks: 1 } }, { new: true });
     return updatedDoc;
+  }
+
+  public async getCreatedUrlCounts(filter: Partial<IUrl>, skip: number, limit: number): Promise<number> {
+    const count = await UrlModel.countDocuments(filter).skip(skip).limit(limit);
+    return count;
   }
 }

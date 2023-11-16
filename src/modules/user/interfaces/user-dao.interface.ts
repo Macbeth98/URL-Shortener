@@ -1,5 +1,5 @@
-import { OrderValueBy } from '@constants/db.constants';
 import { ClientSession } from 'mongoose';
+import { OrderValueBy } from '@/constants/db.constant';
 import { CreateUserDto, GetAllUsersDto, UpdateUserDto } from '../dtos/user.dto';
 import { IUser } from './user.interface';
 

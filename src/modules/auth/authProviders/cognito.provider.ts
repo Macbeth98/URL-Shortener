@@ -67,11 +67,17 @@ export class CognitoAuthProvider implements IAuthProvider {
       Value: tier
     };
 
+    const customUserId = {
+      Name: 'custom:userId',
+      Value: registerRequestDto._id.toString()
+    };
+
     const attributeList = [
       new CognitoUserAttribute(dataEmail),
       new CognitoUserAttribute(preferredUsername),
       new CognitoUserAttribute(updatedAt),
-      new CognitoUserAttribute(customTier)
+      new CognitoUserAttribute(customTier),
+      new CognitoUserAttribute(customUserId)
     ];
 
     return new Promise((resolve, reject) => {
@@ -271,7 +277,11 @@ export class CognitoAuthProvider implements IAuthProvider {
 
         this.logger.info(decoded, 'CognitoAuthService.verifyJwtToken');
 
-        resolve(decoded);
+        resolve({
+          email: decoded.email,
+          tier: decoded['custom:tier'],
+          userId: decoded['custom:userId']
+        });
       });
     });
   }

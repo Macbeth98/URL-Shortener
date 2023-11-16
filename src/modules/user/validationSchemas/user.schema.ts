@@ -1,6 +1,6 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { FastifySchema } from 'fastify';
-import { ERROR400, ERROR401, ERROR404, ERROR409, ERROR500 } from '@/constants/error.constants';
+import { ERROR400, ERROR401, ERROR404, ERROR409, ERROR500 } from '@/constants/error.constant';
 import { UserTier } from '@/utils/enum.type';
 
 export const CreateUserBodySchema = Type.Object({

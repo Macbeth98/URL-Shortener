@@ -1,7 +1,7 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { FastifySchema } from 'fastify';
 import { CreateUserBodySchema, UserResponseSchema } from '@modules/user/validationSchemas/user.schema';
-import { ERROR400, ERROR409, ERROR500 } from '@/constants/error.constants';
+import { ERROR400, ERROR409, ERROR500 } from '@/constants/error.constant';
 
 const passwordSchema = Type.String({
   format: 'regex',

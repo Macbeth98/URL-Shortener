@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { CreateUrlRequestDto, GetUrlParamsDto, GetUrlQueryDto } from './dtos/url.dto';
+import { CreateUrlRequestDto, ProcessUrlParamsDto, GetUrlQueryDto } from './dtos/url.dto';
 import { UrlService } from './url.service';
 
 export class UrlController {
@@ -32,7 +32,7 @@ export class UrlController {
     return urls;
   };
 
-  public processShortUrl = async (req: FastifyRequest<{ Params: GetUrlParamsDto }>, reply: FastifyReply) => {
+  public processShortUrl = async (req: FastifyRequest<{ Params: ProcessUrlParamsDto }>, reply: FastifyReply) => {
     const { params } = req;
     const url = await this.urlService.processShortUrl(params.alias);
     return reply.redirect(url);

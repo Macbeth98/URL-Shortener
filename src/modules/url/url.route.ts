@@ -15,7 +15,8 @@ class UrlRoute implements Routes {
       method: 'post',
       url: this.path,
       schema: CreateUrlSchema,
-      preHandler: fastify.authenticateUser,
+      preValidation: fastify.authenticateUser,
+      preHandler: fastify.tierRatelimiter,
       handler: urlController.createShortUrl
     });
 
@@ -23,7 +24,7 @@ class UrlRoute implements Routes {
       method: 'get',
       url: this.path,
       schema: GetUrlSchema,
-      preHandler: fastify.authenticateUser,
+      preValidation: fastify.authenticateUser,
       handler: urlController.getShortUrl
     });
 
@@ -31,7 +32,8 @@ class UrlRoute implements Routes {
       method: 'get',
       url: `/:alias`,
       schema: ProcessUrlSchema,
-      handler: urlController.processShortUrl
+      handler: urlController.processShortUrl,
+      onResponse: fastify.clicksCountIncrementor
     });
 
     done();

@@ -42,6 +42,7 @@ export interface IAttribute {
 export interface IAuthUser {
   email: string;
   tier: UserTier;
+  userId: string;
 }
 
 export interface IAuthProvider {

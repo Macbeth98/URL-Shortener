@@ -37,6 +37,18 @@ export const urlSchema = new mongoose.Schema(
     clicks: {
       type: Number,
       default: 0
+    },
+    day: {
+      type: Number,
+      default: new Date().getDate()
+    },
+    month: {
+      type: Number,
+      default: new Date().getMonth()
+    },
+    year: {
+      type: Number,
+      default: new Date().getFullYear()
     }
   },
   {

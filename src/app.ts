@@ -18,6 +18,8 @@ import { schemaErrorFormatter } from '@utils/schemaErrorFormatter';
 import { envOptions } from '@config';
 import { serviceContainer } from './modules/containers/service.container';
 import { errorContainer } from './exceptions/error.container';
+import { tierRatelimiter } from './plugins/tierRatelimiter';
+import { clicksCountIncrementor } from './plugins/clicksCountIncrementor';
 
 class App {
   public app: FastifyInstance;
@@ -81,6 +83,8 @@ class App {
     this.app.register(fastifyCompress);
     await this.app.register(fastifySensible);
     await this.app.register(authentication);
+    await this.app.register(tierRatelimiter);
+    await this.app.register(clicksCountIncrementor);
     this.app.register(initSwagger);
   }
 

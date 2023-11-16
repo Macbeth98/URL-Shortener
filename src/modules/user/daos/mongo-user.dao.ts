@@ -1,5 +1,5 @@
 import { ClientSession } from 'mongoose';
-import { OrderValueBy } from '@/constants/db.constants';
+import { OrderValueBy } from '@/constants/db.constant';
 import { CreateUserDto, UserResponseDto } from '../dtos/user.dto';
 import { IUser } from '../interfaces/user.interface';
 import { IUserDAO } from '../interfaces/user-dao.interface';
