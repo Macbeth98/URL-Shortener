@@ -16,7 +16,7 @@ class UserRoute implements Routes {
       method: 'get',
       url: this.path,
       schema: GetUserSchema,
-      preHandler: fastify.authenticateUser,
+      preValidation: fastify.authenticateUser,
       handler: userController.getUser
     });
 
@@ -24,7 +24,7 @@ class UserRoute implements Routes {
       method: 'put',
       url: this.path,
       schema: UpdateUserSchema,
-      preHandler: fastify.authenticateUser,
+      preValidation: fastify.authenticateUser,
       handler: userController.updateUser
     });
 
