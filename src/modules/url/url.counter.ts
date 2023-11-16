@@ -11,18 +11,26 @@ export class UrlCounter implements IUrlCounter {
   constructor(count: number, db: mongoose.mongo.Db) {
     this.count = count;
     this.db = db;
+    this.init();
   }
 
   private async init() {
-    const counterDoc = await this.db.collection('counters').insertOne({ count: this.count });
-    this.counterId = counterDoc.insertedId;
+    const counterDoc = await this.db.collection('counters').findOne({});
+    if (counterDoc) {
+      this.count = counterDoc.count;
+      this.counterId = counterDoc._id;
+      return;
+    }
+
+    const insertCounter = await this.db.collection('counters').insertOne({ count: this.count });
+    this.counterId = insertCounter.insertedId;
   }
 
   private async increment() {
     const counterDoc = await this.db
       .collection('counters')
       .findOneAndUpdate({ _id: this.counterId }, { $inc: { count: 1 } }, { returnDocument: 'after' });
-    this.count += counterDoc.value.count;
+    this.count += counterDoc.count;
   }
 
   public async getCounterValue(): Promise<number> {

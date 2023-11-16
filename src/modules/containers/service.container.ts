@@ -22,7 +22,7 @@ import { IConfig } from '@/utils/validateEnv';
  */
 
 export class ServiceContainer {
-  private initialUrlCounter = 3844;
+  private initialUrlCounter = 238338;
 
   fastify!: FastifyInstance;
 

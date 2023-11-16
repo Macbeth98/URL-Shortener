@@ -28,7 +28,7 @@ export class UrlService {
   }
 
   public async isValidUrl(url: string) {
-    return URL.canParse(url);
+    return new URL(url);
   }
 
   private encodeToBase62(numToEncode: number) {
@@ -125,6 +125,9 @@ export class UrlService {
 
   public async processShortUrl(alias: string) {
     const urlDocument = await this.urlDao.getUrl(alias);
+    if (!urlDocument) {
+      throw this.httpErrors.notFound('URL not found');
+    }
     return urlDocument.url;
   }
 

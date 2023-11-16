@@ -8,8 +8,8 @@ export class MongoUrlDAO implements IUrlDAO {
     return urlDocument;
   }
 
-  public async getUrl(shortUrl: string): Promise<IUrl> {
-    const urlDocument = await UrlModel.findOne({ shortUrl });
+  public async getUrl(alias: string): Promise<IUrl | null> {
+    const urlDocument = await UrlModel.findOne({ alias });
     return urlDocument;
   }
 
@@ -24,7 +24,11 @@ export class MongoUrlDAO implements IUrlDAO {
   }
 
   public async updateClicks(alias: string): Promise<IUrl> {
-    const updatedDoc = await UrlModel.findOneAndUpdate({ alias }, { $inc: { clicks: 1 } }, { new: true });
+    const updatedDoc = await UrlModel.findOneAndUpdate(
+      { alias },
+      { $inc: { clicks: 1 }, $set: { lastClicked: new Date() } },
+      { new: true }
+    );
     return updatedDoc;
   }
 

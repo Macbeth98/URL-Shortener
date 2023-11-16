@@ -38,6 +38,10 @@ export const urlSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    lastClicked: {
+      type: Date,
+      default: null
+    },
     day: {
       type: Number,
       default: new Date().getDate()
