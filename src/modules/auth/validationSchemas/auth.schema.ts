@@ -2,6 +2,7 @@ import { Type } from '@fastify/type-provider-typebox';
 import { FastifySchema } from 'fastify';
 import { CreateUserBodySchema, UserResponseSchema } from '@modules/user/validationSchemas/user.schema';
 import { ERROR400, ERROR409, ERROR500 } from '@/constants/error.constant';
+import { UserTier } from '@/utils/enum.type';
 
 const passwordSchema = Type.String({
   format: 'regex',
@@ -40,6 +41,10 @@ export const LoginUserResponseSchema = Type.Object({
   accessToken: Type.String({ description: 'JWT access token' }),
   idToken: Type.String({ description: 'JWT id token that needs to be sent in the request headers.' }),
   refreshToken: Type.String({ description: 'JWT refresh token.' })
+});
+
+export const UpdateUserTierBodySchema = Type.Object({
+  tier: Type.Enum(UserTier, { description: 'Sets the User Tier. User Tiers: FREE | PRO | PREMIUM' })
 });
 
 export const RegisterUserSchema: FastifySchema = {
@@ -84,6 +89,36 @@ export const LoginUserSchema: FastifySchema = {
       type: 'object',
       properties: {
         ...LoginUserResponseSchema.properties
+      }
+    },
+    400: ERROR400,
+    409: ERROR409,
+    500: ERROR500
+  }
+};
+
+export const UpdateUserTierSchema: FastifySchema = {
+  description: 'Update user tier',
+  tags: ['auth'],
+  summary: 'Update user tier',
+  security: [
+    {
+      token: []
+    }
+  ],
+  body: {
+    type: 'object',
+    required: ['tier'],
+    properties: {
+      ...UpdateUserTierBodySchema.properties
+    }
+  },
+  response: {
+    200: {
+      description: 'Successful update User Tier',
+      type: 'object',
+      properties: {
+        ...UserResponseSchema.properties
       }
     },
     400: ERROR400,

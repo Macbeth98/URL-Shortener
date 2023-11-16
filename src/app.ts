@@ -96,9 +96,7 @@ class App {
 
   private async initializeJwtPlugin() {
     await this.app.register(fastifyJwt, {
-      secret: () => {
-        return serviceContainer.jwtSecret(this.app.config);
-      }
+      secret: () => serviceContainer.jwtSecret(this.app.config)
     });
   }
 

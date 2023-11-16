@@ -222,6 +222,9 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
     const attributeList: CognitoUserAttribute[] = [];
 
     Object.keys(attributes).forEach((key) => {
+      if (key === 'tier') {
+        key = 'custom:tier';
+      }
       attributeList.push(
         new CognitoUserAttribute({
           Name: key,

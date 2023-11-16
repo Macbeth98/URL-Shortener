@@ -3,7 +3,8 @@ import {
   LoginUserBodySchema,
   LoginUserResponseSchema,
   RegisterUserBodySchema,
-  RegisterUserResponseSchema
+  RegisterUserResponseSchema,
+  UpdateUserTierBodySchema
 } from '../validationSchemas/auth.schema';
 import { IUser } from '@/modules/user/interfaces/user.interface';
 
@@ -17,3 +18,5 @@ export interface RegisterResponseDto extends Omit<Static<typeof RegisterUserResp
 export interface LoginRequestDto extends Static<typeof LoginUserBodySchema> {}
 
 export interface LoginResponseDto extends Static<typeof LoginUserResponseSchema> {}
+
+export interface UpdateUserTierRequestDto extends Static<typeof UpdateUserTierBodySchema> {}

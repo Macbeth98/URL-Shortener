@@ -16,10 +16,11 @@ export const UserResponseSchema = Type.Object({
   username: Type.String({ minLength: 3, maxLength: 20 }),
   email: Type.String({ format: 'email' }),
   tier: Type.String(Type.Enum(UserTier, { default: UserTier.FREE, description: 'Displays the Current User Tier' })),
+  displayUsername: Type.Optional(Type.String({ minLength: 3, maxLength: 20 })),
   createdAt: Type.String({ format: 'date-time' })
 });
 
-export const UpdateUserBodySchema = Type.Optional(Type.Omit(CreateUserBodySchema, ['email']));
+export const UpdateUserBodySchema = Type.Optional(Type.Omit(CreateUserBodySchema, ['email', 'tier']));
 
 export const CreateUserSchema: FastifySchema = {
   description: 'Create user api',
@@ -73,15 +74,8 @@ export const UpdateUserSchema: FastifySchema = {
   tags: ['user'],
   body: {
     type: 'object',
-    required: ['email', 'updateData'],
     properties: {
-      email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } }),
-      updateData: {
-        type: 'object',
-        properties: {
-          ...UpdateUserBodySchema.properties
-        }
-      }
+      ...UpdateUserBodySchema.properties
     }
   },
   response: {

@@ -95,6 +95,46 @@ class AuthService {
   public async verifyJwtToken(token: string): Promise<IAuthUser> {
     return this.authProvider.verifyJwtToken(token);
   }
+
+  public async updateUserTier(authUser: IAuthUser, tier: UserTier): Promise<RegisterResponseDto['user']> {
+    const { email } = authUser;
+
+    if (tier === authUser.tier) {
+      throw errorContainer.httpErrors.badRequest('User tier is already the same');
+    }
+
+    const session = await mongoose.startSession();
+
+    session.startTransaction();
+
+    const user = await this.userService.updateUser(email, { tier }, session);
+
+    let authProviderResponse: boolean;
+
+    try {
+      authProviderResponse = await this.authProvider.updateUserAttributes(email, { tier });
+
+      if (!authProviderResponse) {
+        throw errorContainer.httpErrors.internalServerError('Failed to update user tier');
+      }
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+
+      throw error;
+    } finally {
+      session.endSession();
+    }
+
+    return {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      tier: user.tier,
+      createdAt: user.createdAt.toISOString()
+    };
+  }
 }
 
 export default AuthService;

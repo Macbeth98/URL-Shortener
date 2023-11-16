@@ -4,7 +4,7 @@ import { Routes } from '@interfaces/routes.interface';
 
 import AuthController from '@modules/auth/auth.controller';
 
-import { LoginUserSchema, RegisterUserSchema } from '@modules/auth/validationSchemas/auth.schema';
+import { LoginUserSchema, RegisterUserSchema, UpdateUserTierSchema } from '@modules/auth/validationSchemas/auth.schema';
 
 class AuthRoute implements Routes {
   public path = '/auth';
@@ -24,6 +24,14 @@ class AuthRoute implements Routes {
       url: `${this.path}/login`,
       schema: LoginUserSchema,
       handler: authController.login
+    });
+
+    fastify.route({
+      method: 'put',
+      url: `${this.path}/updateTier`,
+      schema: UpdateUserTierSchema,
+      preValidation: fastify.authenticateUser,
+      handler: authController.updateUserTier
     });
     done();
   }

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import AuthService from '@modules/auth/auth.service';
-import { LoginRequestDto, RegisterRequestDto } from './dtos/auth.dto';
+import { LoginRequestDto, RegisterRequestDto, UpdateUserTierRequestDto } from './dtos/auth.dto';
 
 class AuthController {
   private authService: AuthService;
@@ -19,6 +19,15 @@ class AuthController {
     const { email, password } = req.body;
 
     const data = await this.authService.loginUser({ email, password });
+
+    reply.status(200).send(data);
+  };
+
+  public updateUserTier = async (req: FastifyRequest<{ Body: UpdateUserTierRequestDto }>, reply: FastifyReply) => {
+    const { user } = req;
+    const { tier } = req.body;
+
+    const data = await this.authService.updateUserTier(user, tier);
 
     reply.status(200).send(data);
   };

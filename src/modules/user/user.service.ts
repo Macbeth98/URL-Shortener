@@ -74,6 +74,14 @@ class UserService {
   }
 
   public async updateUser(email: string, updateData: UpdateUserDto, session?: ClientSession): Promise<IUser> {
+    if (updateData.username) {
+      updateData.displayUsername = updateData.username;
+
+      const usernameUserExists = await this.userDao.getUser({ username: updateData.username.toLowerCase() });
+      if (usernameUserExists) {
+        throw errorContainer.httpErrors.conflict('Username already exists');
+      }
+    }
     const user = await this.userDao.updateUser(email, updateData, session);
 
     if (!user) {
