@@ -74,7 +74,7 @@ class App {
     await this.app.register(fastifyEnv, envOptions);
     await this.app.register(mongodbPlugin, { uri: this.app.config.DATABASE_URL });
     await this.app.register(fastifyRateLimit, {
-      max: 1060,
+      max: 50,
       timeWindow: '1 minute',
       allowList: ['127.0.0.1']
     });
