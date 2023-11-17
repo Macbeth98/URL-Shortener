@@ -250,13 +250,6 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
     const updateResult = await this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params).promise();
     this.logger.info(updateResult, 'CognitoAuthService.updateUserAttributes:: updateResult');
 
-    await this.cognitoIdentityServiceProvider
-      .adminUserGlobalSignOut({
-        UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
-        Username: authId
-      })
-      .promise();
-
     return true;
 
     // return new Promise((resolve, reject) => {
