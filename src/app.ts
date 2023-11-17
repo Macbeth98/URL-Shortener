@@ -89,9 +89,9 @@ class App {
   }
 
   private async initializeContainers() {
+    await errorContainer.init(this.app);
     await serviceContainer.init(this.app);
     this.app.decorate('serviceContainer', serviceContainer);
-    errorContainer.init(this.app);
   }
 
   private async initializeJwtPlugin() {

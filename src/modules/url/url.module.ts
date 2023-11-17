@@ -5,6 +5,7 @@ import { UrlCounter } from './url.counter';
 import { UrlService } from './url.service';
 import { MongoUrlDAO } from './daos/mongo-url.dao';
 import UserService from '../user/user.service';
+import { SCache } from '@/cache/lru.cache';
 
 export class UrlModule {
   public urlService: UrlService;
@@ -13,7 +14,13 @@ export class UrlModule {
 
   private urlCounter: IUrlCounter;
 
-  constructor(urlService?: UrlService, urlDao?: IUrlDAO, urlCounter?: IUrlCounter, userService?: UserService) {
+  constructor(
+    urlService?: UrlService,
+    urlDao?: IUrlDAO,
+    urlCounter?: IUrlCounter,
+    userService?: UserService,
+    urlCache?: SCache
+  ) {
     if (urlService) {
       // Handling the case where a UrlService is provided
       this.urlService = urlService;
@@ -21,16 +28,21 @@ export class UrlModule {
       // Handling the case where UrlDAO and other dependencies are provided
       this.urlDao = urlDao;
       this.urlCounter = urlCounter as IUrlCounter;
-      this.urlService = new UrlService(this.urlCounter, this.urlDao, userService as UserService);
+      this.urlService = new UrlService(this.urlCounter, this.urlDao, userService, urlCache);
     } else {
       throw new Error('UrlModule requires either a UrlService or UrlDAO and other dependencies');
     }
   }
 
-  public static async register(initialUrlCounter: number, db: mongoose.mongo.Db, userService: UserService) {
+  public static async register(
+    initialUrlCounter: number,
+    db: mongoose.mongo.Db,
+    userService: UserService,
+    urlCache: SCache
+  ) {
     const urlCounter = new UrlCounter(initialUrlCounter, db);
     const urlDao = new MongoUrlDAO();
-    const urlService = new UrlService(urlCounter, urlDao, userService);
+    const urlService = new UrlService(urlCounter, urlDao, userService, urlCache);
     return new UrlModule(urlService);
   }
 }
