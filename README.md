@@ -6,15 +6,15 @@
 
 <h4 align="center"> A URL Shortener implemented in Node-Typescript-Fastify-MongoDB/Mongoose</h4>
 <h5 align="center">
-  <b>Backend APIs at urlscut.co
+  <b>Backend APIs at
   <a href="https://urlscut.co/" target="_blank">
-    urlscuts.co
+    urlscuts.co/
   </a></b>
  </h5>
  <h5 align="center">
-  <b>Swagger API Docs at urlscut.co/api-docs
+  <b>Swagger API Docs at
   <a href="https://urlscut.co/api-docs" target="_blank">
-    urlscuts.co
+    urlscuts.co/api-docs
   </a></b>
  </h5>
  <br>
