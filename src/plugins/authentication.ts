@@ -15,8 +15,6 @@ export const authentication = fastifyPlugin((fastify: FastifyInstance, _: unknow
 
       payload.tier = user.tier as UserTier;
 
-      console.log('JWT Payload: ', payload);
-
       if (!payload) {
         throw errorContainer.httpErrors.unauthorized('Unauthorized: Invalid Jwt Token');
       }

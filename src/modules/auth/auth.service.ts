@@ -100,8 +100,6 @@ class AuthService {
     // AuthPorvider login here.
     const authResponse: IAuthLoginResponse = await this.authProvider.login(loginData, clientIp);
 
-    console.log('Received AUth response..');
-
     return {
       status: 'OK',
       message: authResponse.message,

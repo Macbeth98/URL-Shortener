@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { CreateUrlRequestDto, ProcessUrlParamsDto, GetUrlQueryDto } from './dtos/url.dto';
+import { CreateUrlRequestDto, GetUrlQueryDto, ProcessUrlParamsDto } from './dtos/url.dto';
 import { UrlService } from './url.service';
 
 export class UrlController {
