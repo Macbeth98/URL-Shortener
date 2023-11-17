@@ -20,7 +20,7 @@
   "scripts": {
     "start": "npm run build:prod && cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
-    "start:pm2": "npm run build:prod && cross-env NODE_ENV=production pm2 dist/server.js --name url-shortener",
+    "start:pm2": "npm run build:prod && cross-env NODE_ENV=production pm2 start dist/server.js --name url-shortener",
     "build:prod": "cross-env NODE_ENV=production swc src -d dist --source-maps --copy-files",
     "build:dev": "cross-env NODE_ENV=development swc src -d dist --source-maps --copy-files",
     "check-types": "tsc --noemit",
