@@ -1,15 +1,21 @@
 <h1 align="center">
     <br>
-  Fastify Typescript Mongoose Starter
+  URL-Shortener
   <br>
 </h1>
 
-<h4 align="center"> Fastify Rest API Boilerplate Using TypeScript and Mongoose</h4>
+<h4 align="center"> A URL Shortener implemented in Node-Typescript-Fastify-MongoDB/Mongoose</h4>
 <h5 align="center">
-  Taken and Modified from 
-  <a href="https://github.com/TheB1gFatPanda/fastify-typescript-starter" target="_blank">
-    <b>TheB1gFatPanda</b>
-  </a>
+  <b>Backend APIs at urlscut.co
+  <a href="https://urlscut.co/" target="_blank">
+    urlscuts.co
+  </a></b>
+ </h5>
+ <h5 align="center">
+  <b>Swagger API Docs at urlscut.co/api-docs
+  <a href="https://urlscut.co/api-docs" target="_blank">
+    urlscuts.co
+  </a></b>
  </h5>
  <br>
   <br>
