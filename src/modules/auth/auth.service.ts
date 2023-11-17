@@ -1,6 +1,13 @@
 import mongoose from 'mongoose';
 import { errorContainer } from '@/exceptions/error.container';
-import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto } from './dtos/auth.dto';
+import {
+  ForgotPasswordResponseDto,
+  LoginRequestDto,
+  LoginResponseDto,
+  RegisterRequestDto,
+  RegisterResponseDto,
+  ResetPasswordResponseDto
+} from './dtos/auth.dto';
 import UserService from '../user/user.service';
 import {
   AuthProvider,
@@ -61,6 +68,28 @@ class AuthService {
     };
   }
 
+  public async resendConfirmation(email: string): Promise<RegisterResponseDto> {
+    const user = await this.userService.getUser({ email });
+    if (!user) {
+      throw errorContainer.httpErrors.notFound('User not found');
+    }
+
+    const authResponse = await this.authProvider.resendConfirmation(email);
+
+    return {
+      status: 'OK',
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        tier: user.tier,
+        createdAt: user.createdAt.toISOString()
+      },
+      message: authResponse.message,
+      codeDeliveryDetails: authResponse.codeDeliveryDetails
+    };
+  }
+
   public async loginUser(loginData: LoginRequestDto, clientIp?: string): Promise<LoginResponseDto> {
     const user = await this.userService.getUser({ email: loginData.email });
 
@@ -70,6 +99,8 @@ class AuthService {
 
     // AuthPorvider login here.
     const authResponse: IAuthLoginResponse = await this.authProvider.login(loginData, clientIp);
+
+    console.log('Received AUth response..');
 
     return {
       status: 'OK',
@@ -88,6 +119,39 @@ class AuthService {
     };
   }
 
+  public async forgotPassword(email: string): Promise<ForgotPasswordResponseDto> {
+    const user = await this.userService.getUser({ email });
+    if (!user) {
+      throw errorContainer.httpErrors.notFound('User not found');
+    }
+
+    const response = await this.authProvider.forgotPassword(email);
+
+    return {
+      status: 'OK',
+      message: response.message,
+      codeDeliveryDetails: response.codeDeliveryDetails
+    };
+  }
+
+  public async resetPassword(
+    email: string,
+    verificationCode: string,
+    newPassword: string
+  ): Promise<ResetPasswordResponseDto> {
+    const user = await this.userService.getUser({ email });
+    if (!user) {
+      throw errorContainer.httpErrors.notFound('User not found');
+    }
+
+    const response = await this.authProvider.resetPassword(email, verificationCode, newPassword);
+
+    return {
+      status: 'OK',
+      message: response.message
+    };
+  }
+
   public async jwtSecret(): Promise<string> {
     return this.authProvider.jwtSecret();
   }
@@ -97,7 +161,7 @@ class AuthService {
   }
 
   public async updateUserTier(authUser: IAuthUser, tier: UserTier): Promise<RegisterResponseDto['user']> {
-    const { email } = authUser;
+    const { email, authId } = authUser;
 
     if (tier === authUser.tier) {
       throw errorContainer.httpErrors.badRequest('User tier is already the same');
@@ -112,7 +176,7 @@ class AuthService {
     let authProviderResponse: boolean;
 
     try {
-      authProviderResponse = await this.authProvider.updateUserAttributes(email, { tier });
+      authProviderResponse = await this.authProvider.updateUserAttributes(authId, { tier });
 
       if (!authProviderResponse) {
         throw errorContainer.httpErrors.internalServerError('Failed to update user tier');

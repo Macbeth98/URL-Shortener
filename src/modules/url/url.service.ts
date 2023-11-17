@@ -81,8 +81,14 @@ export class UrlService {
       setCustomAlias = true;
     } else {
       // Create the short URL alias
-
-      alias = await this.generateAlias();
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        alias = await this.generateAlias();
+        const urlDocument = await this.urlDao.getUrl(alias);
+        if (!urlDocument) {
+          break;
+        }
+      }
     }
 
     const shortUrl = `${this.shortUrl}/${alias}`;
@@ -99,7 +105,7 @@ export class UrlService {
     // save to the Database
     const urlDocument = await this.urlDao.createUrl(urlDoc);
 
-    this.cache.set(alias, shortUrl);
+    this.cache.set(alias, url);
 
     return urlDocument;
   }

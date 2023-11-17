@@ -4,7 +4,14 @@ import { Routes } from '@interfaces/routes.interface';
 
 import AuthController from '@modules/auth/auth.controller';
 
-import { LoginUserSchema, RegisterUserSchema, UpdateUserTierSchema } from '@modules/auth/validationSchemas/auth.schema';
+import {
+  ForgotPasswordSchema,
+  LoginUserSchema,
+  RegisterUserSchema,
+  ResendConfirmationSchema,
+  ResetPasswordSchema,
+  UpdateUserTierSchema
+} from '@modules/auth/validationSchemas/auth.schema';
 
 class AuthRoute implements Routes {
   public path = '/auth';
@@ -21,9 +28,30 @@ class AuthRoute implements Routes {
 
     fastify.route({
       method: 'post',
+      url: `${this.path}/resendConfirmation`,
+      schema: ResendConfirmationSchema,
+      handler: authController.resendConfirmation
+    });
+
+    fastify.route({
+      method: 'post',
       url: `${this.path}/login`,
       schema: LoginUserSchema,
       handler: authController.login
+    });
+
+    fastify.route({
+      method: 'post',
+      url: `${this.path}/forgotPassword`,
+      schema: ForgotPasswordSchema,
+      handler: authController.forgotPassword
+    });
+
+    fastify.route({
+      method: 'post',
+      url: `${this.path}/resetPassword`,
+      schema: ResetPasswordSchema,
+      handler: authController.resetPassword
     });
 
     fastify.route({

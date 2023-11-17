@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcrypt';
-import mongoose from 'mongoose';
+import mongoose, { SchemaTypes } from 'mongoose';
 import { HttpErrors } from '@fastify/sensible';
 import { JWT } from '@fastify/jwt';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
@@ -67,6 +67,7 @@ export class BasicAuthProvider extends AbstractAuthProvider implements IAuthProv
     const { email, password } = loginRequestDto;
 
     const user = (await this.db.collection('auth').findOne({ email })) as unknown as {
+      _id: string;
       email: string;
       password: string;
       tier: string;
@@ -86,7 +87,8 @@ export class BasicAuthProvider extends AbstractAuthProvider implements IAuthProv
     const payload = {
       email: user.email,
       tier: user.tier,
-      userId: user.userId
+      userId: user.userId,
+      authId: user._id.toString()
     };
 
     const idToken = await this.jwt.sign(payload, { expiresIn: '60m' });
@@ -149,8 +151,8 @@ export class BasicAuthProvider extends AbstractAuthProvider implements IAuthProv
     };
   }
 
-  public async updateUserAttributes(email: string, attributes: IAttribute): Promise<boolean> {
-    await this.db.collection('auth').updateOne({ email }, { $set: attributes });
+  public async updateUserAttributes(authId: string, attributes: IAttribute): Promise<boolean> {
+    await this.db.collection('auth').updateOne({ _id: new SchemaTypes.ObjectId(authId) }, { $set: attributes });
     return true;
   }
 

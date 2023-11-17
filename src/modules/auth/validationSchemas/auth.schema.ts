@@ -43,6 +43,27 @@ export const LoginUserResponseSchema = Type.Object({
   refreshToken: Type.String({ description: 'JWT refresh token.' })
 });
 
+export const ForgotPasswordResponseSchema = Type.Object({
+  status: Type.String({ default: 'OK' }),
+  message: Type.String({ default: 'Password reset code sent to your email' }),
+  codeDeliveryDetails: Type.Object({
+    AttributeName: Type.String({ description: 'Code' }),
+    DeliveryMedium: Type.String({ description: 'The medium used to send the code.' }),
+    Destination: Type.String({ format: 'email', description: 'Email address where the code/link was sent.' })
+  })
+});
+
+export const ResetPasswordRequestSchema = Type.Object({
+  email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } }),
+  newPassword: passwordSchema,
+  verificationCode: Type.String({ description: 'Verification code sent to your email' })
+});
+
+export const ResetPasswordResponseSchema = Type.Object({
+  status: Type.String({ default: 'OK' }),
+  message: Type.String({ default: 'Password successfully reset' })
+});
+
 export const UpdateUserTierBodySchema = Type.Object({
   tier: Type.Enum(UserTier, { description: 'Sets the User Tier. User Tiers: FREE | PRO | PREMIUM' })
 });
@@ -72,6 +93,31 @@ export const RegisterUserSchema: FastifySchema = {
   }
 };
 
+export const ResendConfirmationSchema: FastifySchema = {
+  description: 'Resend confirmation Code/link for the verification of email',
+  tags: ['auth'],
+  summary: 'Resend confirmation Code/link',
+  body: {
+    type: 'object',
+    required: ['email'],
+    properties: {
+      email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } })
+    }
+  },
+  response: {
+    200: {
+      description: 'Successful resend confirmation code',
+      type: 'object',
+      properties: {
+        ...RegisterUserResponseSchema.properties
+      }
+    },
+    400: ERROR400,
+    409: ERROR409,
+    500: ERROR500
+  }
+};
+
 export const LoginUserSchema: FastifySchema = {
   description: 'Login user',
   tags: ['auth'],
@@ -89,6 +135,56 @@ export const LoginUserSchema: FastifySchema = {
       type: 'object',
       properties: {
         ...LoginUserResponseSchema.properties
+      }
+    },
+    400: ERROR400,
+    409: ERROR409,
+    500: ERROR500
+  }
+};
+
+export const ForgotPasswordSchema: FastifySchema = {
+  description: 'Forgot password: Request Verification Code',
+  tags: ['auth'],
+  summary: 'Forgot password',
+  body: {
+    type: 'object',
+    required: ['email'],
+    properties: {
+      email: Type.String({ format: 'email', errorMessage: { format: 'Invalid Email' } })
+    }
+  },
+  response: {
+    200: {
+      description: 'Successful. Verification code sent to your email',
+      type: 'object',
+      properties: {
+        ...ForgotPasswordResponseSchema.properties
+      }
+    },
+    400: ERROR400,
+    409: ERROR409,
+    500: ERROR500
+  }
+};
+
+export const ResetPasswordSchema: FastifySchema = {
+  description: 'Reset password: Set new password',
+  tags: ['auth'],
+  summary: 'Reset password',
+  body: {
+    type: 'object',
+    required: ['email', 'newPassword', 'verificationCode'],
+    properties: {
+      ...ResetPasswordRequestSchema.properties
+    }
+  },
+  response: {
+    200: {
+      description: 'Successful reset password',
+      type: 'object',
+      properties: {
+        ...ResetPasswordResponseSchema.properties
       }
     },
     400: ERROR400,

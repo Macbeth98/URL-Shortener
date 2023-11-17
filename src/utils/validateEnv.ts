@@ -8,6 +8,8 @@ export const schema = Type.Object({
   AWS_COGNITO_USER_POOL_ID: Type.String(),
   AWS_COGNITO_CLIENT_ID: Type.String(),
   AWS_REGION: Type.String(),
+  AWS_COGNITO_ACCESS_KEY: Type.String(),
+  AWS_COGNITO_SECRET_KEY: Type.String(),
   SHORT_URL: Type.String()
 });
 

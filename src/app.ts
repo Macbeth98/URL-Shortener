@@ -74,7 +74,7 @@ class App {
     await this.app.register(fastifyEnv, envOptions);
     await this.app.register(mongodbPlugin, { uri: this.app.config.DATABASE_URL });
     await this.app.register(fastifyRateLimit, {
-      max: 60,
+      max: 1060,
       timeWindow: '1 minute',
       allowList: ['127.0.0.1']
     });
@@ -95,9 +95,8 @@ class App {
   }
 
   private async initializeJwtPlugin() {
-    await this.app.register(fastifyJwt, {
-      secret: () => serviceContainer.jwtSecret(this.app.config)
-    });
+    const publicKey = await serviceContainer.jwtSecret(this.app.config);
+    await this.app.register(fastifyJwt, { secret: { public: publicKey } });
   }
 
   private initializeRoutes() {

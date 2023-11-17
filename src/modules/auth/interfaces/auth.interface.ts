@@ -44,6 +44,7 @@ export interface IAuthUser {
   email: string;
   tier: UserTier;
   userId: string;
+  authId: string;
 }
 
 export interface IAuthProvider {
@@ -57,7 +58,7 @@ export interface IAuthProvider {
 
   resetPassword: (email: string, code: string, newPassword: string) => Promise<IAuthResetPasswordResponse>;
 
-  updateUserAttributes: (email: string, attributes: IAttribute) => Promise<boolean>;
+  updateUserAttributes: (authId: string, attributes: IAttribute) => Promise<boolean>;
 
   deleteUser: (email: string) => Promise<boolean>;
 

@@ -2,6 +2,7 @@ import { CognitoUser, CognitoUserAttribute, CognitoUserPool } from 'amazon-cogni
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import axios from 'axios';
 import jwkToPem from 'jwk-to-pem';
+import { JWT } from '@fastify/jwt';
 import {
   IAttribute,
   IAuthForgotPasswordResponse,
@@ -11,27 +12,31 @@ import {
   IAuthResetPasswordResponse,
   IAuthUser
 } from '../interfaces/auth.interface';
-import { serviceContainer } from '@/modules/containers/service.container';
 import { LoginRequestDto, RegisterRequestDto } from '../dtos/auth.dto';
 import { UserTier } from '@/utils/enum.type';
 import { AbstractAuthProvider } from './abstract.provider';
 import { IConfig } from '@/utils/validateEnv';
+import { ILogger } from '@/interfaces/logger.interface';
+import { ServiceContainer } from '@/modules/containers/service.container';
 
 export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthProvider {
   private userPool: CognitoUserPool;
 
   private cognitoIdentityServiceProvider: CognitoIdentityServiceProvider;
 
-  private config = serviceContainer.config;
+  private config: IConfig;
 
-  private logger = serviceContainer.logger;
+  private logger: ILogger;
 
-  private jwt = serviceContainer.jwt;
+  private jwt: JWT;
 
-  private cognitoEndpoint: string;
-
-  constructor() {
+  constructor(serviceContainer: ServiceContainer) {
     super();
+
+    this.config = serviceContainer.config;
+    this.jwt = serviceContainer.jwt;
+    this.logger = serviceContainer.logger;
+
     this.userPool = new CognitoUserPool({
       UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
       ClientId: this.config.AWS_COGNITO_CLIENT_ID
@@ -39,9 +44,9 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
 
     const authority = `https://cognito-idp.${this.config.AWS_REGION}.amazonaws.com/${this.config.AWS_COGNITO_USER_POOL_ID}`;
 
-    this.cognitoEndpoint = `${authority}/.well-known/jwks.json`;
-
     this.cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider({
+      accessKeyId: this.config.AWS_COGNITO_ACCESS_KEY,
+      secretAccessKey: this.config.AWS_COGNITO_SECRET_KEY,
       region: this.config.AWS_REGION,
       endpoint: authority
     });
@@ -92,7 +97,7 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
 
         const response: IAuthRegisterResponse = {
           status: true,
-          message: 'User successfully registered. Please check your email for verification code!',
+          message: 'User successfully registered. Please check your email for verification link!',
           codeDeliveryDetails: result.codeDeliveryDetails
         };
 
@@ -116,7 +121,7 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
 
         const response: IAuthRegisterResponse = {
           status: true,
-          message: 'Verification code successfully resent. Please check your email!',
+          message: 'Verification link successfully resent. Please check your email!',
           codeDeliveryDetails: result.CodeDeliveryDetails
         };
 
@@ -213,37 +218,58 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
     });
   }
 
-  updateUserAttributes(email: string, attributes: IAttribute): Promise<boolean> {
-    const cognitoUser = new CognitoUser({
-      Username: email,
-      Pool: this.userPool
-    });
+  public async updateUserAttributes(authId: string, attributes: IAttribute): Promise<boolean> {
+    // const cognitoUser = new CognitoUser({
+    //   Username: email,
+    //   Pool: this.userPool
+    // });
 
     const attributeList: CognitoUserAttribute[] = [];
 
     Object.keys(attributes).forEach((key) => {
+      const value = attributes[key];
       if (key === 'tier') {
         key = 'custom:tier';
       }
       attributeList.push(
         new CognitoUserAttribute({
           Name: key,
-          Value: attributes[key]
+          Value: value
         })
       );
     });
 
-    return new Promise((resolve, reject) => {
-      cognitoUser.updateAttributes(attributeList, (err, result) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+    const params = {
+      UserAttributes: attributeList,
+      UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
+      Username: authId
+    };
 
-        this.logger.info(result, 'CognitoAuthService.editUserAttributes');
-        resolve(true);
-      });
-    });
+    this.logger.info(params, 'CognitoAuthService.updateUserAttributes');
+
+    const updateResult = await this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params).promise();
+    this.logger.info(updateResult, 'CognitoAuthService.updateUserAttributes:: updateResult');
+
+    await this.cognitoIdentityServiceProvider
+      .adminUserGlobalSignOut({
+        UserPoolId: this.config.AWS_COGNITO_USER_POOL_ID,
+        Username: authId
+      })
+      .promise();
+
+    return true;
+
+    // return new Promise((resolve, reject) => {
+    //   this.cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, (err, result) => {
+    //     if (err) {
+    //       reject(err);
+    //       return;
+    //     }
+
+    //     this.logger.info(result, 'CognitoAuthService.updateUserAttributes');
+    //     resolve(true);
+    //   });
+    // });
   }
 
   deleteUser(email: string): Promise<boolean> {
@@ -294,7 +320,8 @@ export class CognitoAuthProvider extends AbstractAuthProvider implements IAuthPr
         resolve({
           email: decoded.email,
           tier: decoded['custom:tier'],
-          userId: decoded['custom:userId']
+          userId: decoded['custom:userId'],
+          authId: decoded.sub
         });
       });
     });
