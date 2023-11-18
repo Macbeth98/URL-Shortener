@@ -5,7 +5,7 @@ import { UrlCounter } from './url.counter';
 import { UrlService } from './url.service';
 import { MongoUrlDAO } from './daos/mongo-url.dao';
 import UserService from '../user/user.service';
-import { SCache } from '@/cache/lru.cache';
+import { ICache } from '@/cache/cache.interface';
 
 export class UrlModule {
   public urlService: UrlService;
@@ -19,7 +19,7 @@ export class UrlModule {
     urlDao?: IUrlDAO,
     urlCounter?: IUrlCounter,
     userService?: UserService,
-    urlCache?: SCache
+    urlCache?: ICache
   ) {
     if (urlService) {
       // Handling the case where a UrlService is provided
@@ -38,7 +38,7 @@ export class UrlModule {
     initialUrlCounter: number,
     db: mongoose.mongo.Db,
     userService: UserService,
-    urlCache: SCache
+    urlCache: ICache
   ) {
     const urlCounter = new UrlCounter(initialUrlCounter, db);
     const urlDao = new MongoUrlDAO();

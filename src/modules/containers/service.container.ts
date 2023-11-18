@@ -7,7 +7,9 @@ import { AuthModule } from '../auth/auth.module';
 import { UrlService } from '../url/url.service';
 import { UrlModule } from '../url/url.module';
 import { IConfig } from '@/utils/validateEnv';
-import { SCache } from '@/cache/lru.cache';
+import { ICache } from '@/cache/cache.interface';
+import { SystemLRUCache } from '@/cache/lru.cache';
+import { RedisLRUCache } from '@/cache/redis-lru.cache';
 
 /**
  * @dev This class is used to store all the services that are used in the application.
@@ -33,7 +35,7 @@ export class ServiceContainer {
 
   jwt!: FastifyInstance['jwt'];
 
-  cache!: SCache;
+  cache!: ICache;
 
   jwtSecret!: (config: IConfig) => Promise<string>;
 
@@ -46,7 +48,7 @@ export class ServiceContainer {
   urlService!: UrlService;
 
   constructor() {
-    this.cache = new SCache();
+    // this.cache = new SystemLRUCache();
     this.jwtSecret = AuthModule.jwtSecret;
   }
 
@@ -56,6 +58,8 @@ export class ServiceContainer {
     this.logger = fastify.log;
     this.jwt = fastify.jwt;
     this.httpErrors = fastify.httpErrors;
+
+    this.cache = this.config.NODE_ENV === 'production' ? new RedisLRUCache() : new SystemLRUCache();
 
     this.userService = (await UserModule.register()).userService;
     this.authService = (await AuthModule.register(this.userService, this)).authService;

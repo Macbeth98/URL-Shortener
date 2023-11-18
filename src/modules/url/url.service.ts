@@ -6,7 +6,7 @@ import { serviceContainer } from '../containers/service.container';
 import { IUrlDAO } from './interfaces/url-dao.interface';
 import { IUrl } from './interfaces/url.interface';
 import UserService from '../user/user.service';
-import { SCache } from '@/cache/lru.cache';
+import { ICache } from '@/cache/cache.interface';
 
 export class UrlService {
   private httpErrors = errorContainer.httpErrors;
@@ -21,9 +21,9 @@ export class UrlService {
 
   private userService: UserService;
 
-  private cache: SCache;
+  private cache: ICache;
 
-  constructor(urlCounter: IUrlCounter, urlDao: IUrlDAO, userService: UserService, cache: SCache) {
+  constructor(urlCounter: IUrlCounter, urlDao: IUrlDAO, userService: UserService, cache: ICache) {
     this.urlCounter = urlCounter;
     this.shortUrl = this.config.SHORT_URL;
     this.urlDao = urlDao;
