@@ -23,6 +23,9 @@
 ## Features:
 
 <p>
+<a href="https://urlscut.co/" target="_blank" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/URLShortener-blue?style=for-the-badge" />
+  </a>&nbsp;&nbsp;
   <a href="https://www.fastify.io/" target="_blank" style="text-decoration: none;">
     <img src="https://img.shields.io/badge/fastify-%23000000.svg?style=for-the-badge&logo=fastify&logoColor=white" />
   </a>&nbsp;&nbsp;
@@ -79,7 +82,6 @@ refer <span style="color:red;">env.example</span>
 
 ```sh
 .env.development
-.env.test
 .env.production
 ```
 
@@ -99,4 +101,35 @@ npm run dev
 
 ### Swagger Endpoint:
 
-http://localhost:3000/api-docs
+https://urlscut.co/api-docs
+
+- The APIs are documented properly using the fastify-Swagger utility module.
+
+### About the Design
+
+- The App uses Fastify freamework instead of express. I have used this as Fastify boasts to be the fastest and with less overhead. Technically it would mean that fastify server would be able to handle more requests/sec. You can see the [benchmarks here](https://fastify.dev/benchmarks/).
+- I have used Typescript so that my code will be clean and much readable. But also to reduce the run time errors. With Typescript I can do better apply the OOD principles.
+- I have extensively used Dependency Injection wherever possible, as that would give us much better usecase in switching of services and also better tests!
+- The fastify framework with it's plugins usually becomes tightly coupled as we would need to pass the fastify app instances into controller and even services to use the plugins and also for the corresponding constructor Injections.
+  - To avoid that I created a `ServiceContainer` that essentially acts as the place where all the Classes will be instantiated and will be served wherever necessary through dependency Injection. This class will also hold fastify Plugins as properties and can be used anywhere through dependency Injection or directly importing the instance.
+  - All the classes are singleton and are only instantiated once through `ServiceContainer` and `ServiceContainer` class itself is also instantiated only once.
+  - Through this way instead of depending on the fastify Instance and fastify framework, the controller and service layer depends on this ServiceContainer. By doing this way, the app becomes platform independent and can easily switch between frameworks, by changing the routing layer and assigning proper corresponding ServiceContainer proprties.
+- The app also seperates the **Data Access Object layer: communication with Database** through the use of Interfaces and Dependency Injection in the service layer. In this way, it will be easier to switch the Database.
+- The design makes extensive use of this Interfaces and Dependency Injection, as can be seen from the DAOs and Auth Providers, where I have implemented two Auth Provider, one is Basic Auth and the Other is **AWS Cognito**.
+- The folder or directory structure is also divided into modules, where in each module intiates its own services and its corresponding provider dependencies. This will be done at the bootup of the app through the ServiceContainer class.
+
+### Caching
+
+- The server uses in memory cache, that is design similar **LRU (Least Recently Used)**, in conjunction with **Redis**.
+- This makes the processing of Short URLs, much faster.
+
+### Tests
+
+- Currently No test cases have been written.
+- Will be writing test cases soon...!
+
+### Hosting
+
+- The server is hosted on the AWS EC2 instance through nginx proxy server.
+- The server is also configured http2.
+- As mentioned, the APIs are live at [urlscut.co](https://urlscut.co/)
