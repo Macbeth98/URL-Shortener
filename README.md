@@ -118,6 +118,15 @@ https://urlscut.co/api-docs
 - The design makes extensive use of this Interfaces and Dependency Injection, as can be seen from the DAOs and Auth Providers, where I have implemented two Auth Provider, one is Basic Auth and the Other is **AWS Cognito**.
 - The folder or directory structure is also divided into modules, where in each module intiates its own services and its corresponding provider dependencies. This will be done at the bootup of the app through the ServiceContainer class.
 
+### Shortening of URL
+
+- I have used the counter approach to generate new Aliases that will be mapped to the long urls.
+- I have chosen to do this way, because I want to generate new Alias irrespective of the long URL unless the user chose a custom Alias.
+- The counter will keep getting increment for each URL and the number will be converted to base62 which will be used as the Alias.
+- By following this approach trillions of unique Alias can be generated. As the number from the counter increases, the Alias will also increase.
+- The current Alias will atleast have 4 characters in it.
+- Read more about counter approach from [GeeksforGeeks](https://www.geeksforgeeks.org/system-design-url-shortening-service/#) : https://urlscut.co/counter
+
 ### Caching
 
 - The server uses in memory cache, that is design similar **LRU (Least Recently Used)**, in conjunction with **Redis**.
