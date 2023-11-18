@@ -7,7 +7,8 @@ class IndexController {
     const response: IPingResponseDto = {
       status: 'OK',
       message: `Hello ${ip}, From URL Shortener`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      swagger: 'https://urlscut.co/api-docs'
     };
     reply.send(response);
   };
