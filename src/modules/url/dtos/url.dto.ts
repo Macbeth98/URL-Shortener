@@ -2,6 +2,7 @@ import { Static } from '@fastify/type-provider-typebox';
 import {
   CreateUrlRequestSchema,
   CreateUrlResponseSchema,
+  GetTierLimitResponseSchema,
   GetUrlQuerySchema,
   ProcessUrlParamsSchema
 } from '@modules/url/validationSchemas/url.schema';
@@ -19,3 +20,5 @@ export interface GetUrlQueryDto extends Static<typeof GetUrlQuerySchema> {
   email: string;
   userId?: string | ObjectId;
 }
+
+export interface GetTierLimitsDto extends Static<typeof GetTierLimitResponseSchema> {}

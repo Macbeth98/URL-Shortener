@@ -4,7 +4,7 @@ import { ERROR400, ERROR401, ERROR409, ERROR500 } from '@/constants/error.consta
 
 export const CreateUrlRequestSchema = Type.Object({
   url: Type.String({ format: 'regex', pattern: '^(https?://)', errorMessage: { format: 'Invalid URL' } }),
-  customAlias: Type.Optional(Type.String({ minLength: 3, maxLength: 10 }))
+  customAlias: Type.Optional(Type.String({ minLength: 3, maxLength: 20 }))
 });
 
 export const CreateUrlResponseSchema = Type.Object({
@@ -37,6 +37,11 @@ export const GetUrlResponseSchema = Type.Object({
   createdAt: Type.String({ description: 'The time when the URL was created' }),
   clicks: Type.Number({ description: 'The number of clicks on the URL' }),
   lastClicked: Type.Optional(Type.String({ description: 'The time when the URL was last clicked' }))
+});
+
+export const GetTierLimitResponseSchema = Type.Object({
+  tier: Type.String({ description: 'The tier name' }),
+  limit: Type.Number({ description: 'The tier limit' })
 });
 
 export const CreateUrlSchema: FastifySchema = {
@@ -97,6 +102,25 @@ export const GetUrlSchema: FastifySchema = {
     400: ERROR400,
     401: ERROR401,
     409: ERROR409,
+    500: ERROR500
+  }
+};
+
+export const GetTierLimitsSchema: FastifySchema = {
+  description: 'Get Tier Limits',
+  tags: ['url'],
+  summary: 'Get Tier Limits',
+  response: {
+    200: {
+      description: 'Successful get response',
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          ...GetTierLimitResponseSchema.properties
+        }
+      }
+    },
     500: ERROR500
   }
 };

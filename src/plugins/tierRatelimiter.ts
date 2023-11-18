@@ -20,7 +20,7 @@ export const tierRatelimiter = fastifyPlugin((fastify: FastifyInstance, _: unkno
     const urlsCount = await urlService.getCreatedUrlCounts(filter, 0, tierLimit + 1);
 
     if (urlsCount >= tierLimit) {
-      throw fastify.httpErrors.tooManyRequests('You have reached your monthly limit');
+      throw fastify.httpErrors.tooManyRequests('Tier Limit Reached: You have reached your monthly limit');
     }
   };
 

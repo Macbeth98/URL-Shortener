@@ -32,6 +32,11 @@ export class UrlController {
     return urls;
   };
 
+  public getTierLimits = async () => {
+    const tierLimits = this.urlService.getTierLimits();
+    return tierLimits;
+  };
+
   public processShortUrl = async (req: FastifyRequest<{ Params: ProcessUrlParamsDto }>, reply: FastifyReply) => {
     const { params } = req;
     const url = await this.urlService.processShortUrl(params.alias);

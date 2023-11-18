@@ -23,7 +23,8 @@ export const initSwagger = fastifyPlugin((fastify: FastifyInstance, _: unknown, 
         token: {
           type: 'apiKey',
           name: 'token',
-          in: 'header'
+          in: 'header',
+          description: 'Use the "idToken" from the login API Response.'
         }
       },
       schemes: ['https', 'http'],

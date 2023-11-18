@@ -1,12 +1,14 @@
 import { Schema } from 'mongoose';
 import { errorContainer } from '@/exceptions/error.container';
-import { CreateUrlRequestDto, GetUrlQueryDto } from './dtos/url.dto';
+import { CreateUrlRequestDto, GetTierLimitsDto, GetUrlQueryDto } from './dtos/url.dto';
 import { IUrlCounter } from './interfaces/counter.interface';
 import { serviceContainer } from '../containers/service.container';
 import { IUrlDAO } from './interfaces/url-dao.interface';
 import { IUrl } from './interfaces/url.interface';
 import UserService from '../user/user.service';
 import { ICache } from '@/cache/cache.interface';
+import { TIER_LIMITS } from '@/constants/tier.constant';
+import { UserTier } from '@/utils/enum.type';
 
 export class UrlService {
   private httpErrors = errorContainer.httpErrors;
@@ -133,6 +135,18 @@ export class UrlService {
     const urls = await this.urlDao.getUrls(query, skip, limit);
 
     return urls;
+  }
+
+  public async getTierLimits() {
+    const tierLimits: GetTierLimitsDto[] = [];
+    // eslint-disable-next-line guard-for-in
+    for (const tier in TIER_LIMITS) {
+      tierLimits.push({
+        tier,
+        limit: TIER_LIMITS[tier as UserTier]
+      });
+    }
+    return tierLimits;
   }
 
   public async processShortUrl(alias: string) {

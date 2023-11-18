@@ -74,7 +74,7 @@ class App {
     await this.app.register(fastifyEnv, envOptions);
     await this.app.register(mongodbPlugin, { uri: this.app.config.DATABASE_URL });
     await this.app.register(fastifyRateLimit, {
-      max: 50,
+      max: 60,
       timeWindow: '1 minute',
       allowList: ['127.0.0.1']
     });
@@ -106,9 +106,12 @@ class App {
   private initializeErrorHandling() {
     this.app.setErrorHandler((error: FastifyError, request, reply) => {
       if (error.statusCode === 429) {
-        return reply
-          .status(429)
-          .send({ status: false, message: 'Too many requests. You hit the rate limit! Slow down please!' });
+        if (!error.message.startsWith('Tier Limit Reached')) {
+          this.app.log.info('Too many requests.', error.message);
+          return reply
+            .status(429)
+            .send({ status: false, message: 'Too many requests. You hit the rate limit! Slow down please!' });
+        }
       }
 
       const status: number = error.statusCode ?? 500;

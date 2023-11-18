@@ -1,6 +1,6 @@
 import { FastifyInstance, RouteOptions } from 'fastify';
 import { UrlService } from './url.service';
-import { CreateUrlSchema, GetUrlSchema, ProcessUrlSchema } from './validationSchemas/url.schema';
+import { CreateUrlSchema, GetTierLimitsSchema, GetUrlSchema, ProcessUrlSchema } from './validationSchemas/url.schema';
 import { UrlController } from './url.controller';
 import { Routes } from '@/interfaces/routes.interface';
 
@@ -26,6 +26,13 @@ class UrlRoute implements Routes {
       schema: GetUrlSchema,
       preValidation: fastify.authenticateUser,
       handler: urlController.getShortUrl
+    });
+
+    fastify.route({
+      method: 'get',
+      url: `${this.path}/tierlimits`,
+      schema: GetTierLimitsSchema,
+      handler: urlController.getTierLimits
     });
 
     fastify.route({
