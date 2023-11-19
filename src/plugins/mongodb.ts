@@ -17,6 +17,7 @@ const mongodbPlugin = fp<MongoPluginOptions>(async (fastify: FastifyInstance, op
     fastify.decorate('mongo', dbConnection.connection.db);
 
     fastify.addHook('onClose', async () => {
+      fastify.log.info('MongoDB Disconnected:  After Closing');
       await dbConnection.disconnect();
     });
 

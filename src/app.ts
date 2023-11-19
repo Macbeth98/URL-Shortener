@@ -16,10 +16,10 @@ import mongodbPlugin from '@plugins/mongodb';
 
 import { schemaErrorFormatter } from '@utils/schemaErrorFormatter';
 import { envOptions } from '@config';
-import { serviceContainer } from './modules/containers/service.container';
 import { errorContainer } from './exceptions/error.container';
 import { tierRatelimiter } from './plugins/tierRatelimiter';
 import { clicksCountIncrementor } from './plugins/clicksCountIncrementor';
+import { serviceContainer } from './modules/containers/service.container';
 
 class App {
   public app: FastifyInstance;
@@ -62,7 +62,7 @@ class App {
     return this.app;
   }
 
-  private async init() {
+  public async init() {
     await this.initializePlugins();
     await this.initializeJwtPlugin();
     await this.initializeContainers();

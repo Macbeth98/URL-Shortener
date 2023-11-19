@@ -1,4 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "include": ["test/**/*.ts"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["src/*"],
+      "@config": ["src/config"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@utils/*": ["src/utils/*"],
+      "@constants/*": ["src/constants/*"],
+      "@plugins/*": ["src/plugins/*"],
+      "@modules/*": ["src/modules/*"],
+      "@exceptions/*": ["src/exceptions/*"]
+    }
+  }
 }

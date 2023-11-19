@@ -22,16 +22,17 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@config": ["config"],
-      "@interfaces/*": ["interfaces/*"],
-      "@utils/*": ["utils/*"],
-      "@constants/*": ["constants/*"],
-      "@plugins/*": ["plugins/*"],
-      "@modules/*": ["modules/*"],
-      "@exceptions/*": ["exceptions/*"]
+      "src/*": ["src/*"],
+      "@/*": ["src/*"],
+      "@config": ["src/config"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@utils/*": ["src/utils/*"],
+      "@constants/*": ["src/constants/*"],
+      "@plugins/*": ["src/plugins/*"],
+      "@modules/*": ["src/modules/*"],
+      "@exceptions/*": ["src/exceptions/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env", "src/**/*.feature", "src/**/*.d.ts"],
