@@ -12,6 +12,14 @@
     "sourceType": "module",
     "project": "tsconfig.json"
   },
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "parserOptions": {
+        "project": "tsconfig.test.json"
+      }
+    }
+  ],
   "rules": {
     "fp/no-events": 0,
     "import/no-cycle": 0,

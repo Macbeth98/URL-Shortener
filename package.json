@@ -20,6 +20,7 @@
   "scripts": {
     "start": "npm run build:prod && cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
+    "test": "cross-env NODE_ENV=test tap test/**/*.test.ts --node-arg=--require=ts-node/register",
     "start:pm2": "npm run build:prod && cross-env NODE_ENV=production pm2 start dist/server.js --name url-shortener",
     "build:prod": "cross-env NODE_ENV=production swc src -d dist --source-maps --copy-files",
     "build:dev": "cross-env NODE_ENV=development swc src -d dist --source-maps --copy-files",
@@ -52,7 +53,8 @@
     "jwk-to-pem": "^2.0.5",
     "mongoose": "^8.0.0",
     "pino": "^8.16.1",
-    "pino-pretty": "^10.2.3"
+    "pino-pretty": "^10.2.3",
+    "tap": "^18.6.1"
   },
   "devDependencies": {
     "@swc/cli": "0.1.62",
@@ -61,6 +63,7 @@
     "@types/bcrypt": "5.0.0",
     "@types/jwk-to-pem": "^2.0.3",
     "@types/node": "20.4.6",
+    "@types/tap": "^15.0.11",
     "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.2.1",
     "cross-env": "7.0.3",
@@ -71,8 +74,10 @@
     "lint-staged": "13.2.3",
     "nodemon": "3.0.1",
     "prettier": "3.0.1",
+    "sinon": "^17.0.1",
     "source-map-support": "0.5.21",
     "ts-node": "10.9.1",
+    "ts-node-dev": "^2.0.0",
     "tsc-alias": "1.8.7",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.1.6"

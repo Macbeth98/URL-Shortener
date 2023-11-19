@@ -62,7 +62,7 @@ export class ServiceContainer {
     this.cache = this.config.NODE_ENV === 'production' ? new RedisLRUCache() : new SystemLRUCache();
 
     this.userService = (await UserModule.register()).userService;
-    this.authService = (await AuthModule.register(this.userService, this)).authService;
+    this.authService = (await AuthModule.register(this.userService, this, this.config)).authService;
     this.urlService = (
       await UrlModule.register(this.initialUrlCounter, fastify.mongo, this.userService, this.cache)
     ).urlService;
