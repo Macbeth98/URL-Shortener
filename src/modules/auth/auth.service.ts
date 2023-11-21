@@ -61,6 +61,7 @@ class AuthService {
         username: user.username,
         email: user.email,
         tier: user.tier,
+        displayUsername: user.displayUsername,
         createdAt: user.createdAt.toISOString()
       },
       message: authProviderResponse.message,

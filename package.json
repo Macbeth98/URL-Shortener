@@ -20,7 +20,7 @@
   "scripts": {
     "start": "npm run build:prod && cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
-    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test tap --node-arg=--require=ts-node/register --node-arg=--require=tsconfig-paths/register test/**/*.test.ts --disable-coverage",
+    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test tap --node-arg=--require=ts-node/register --node-arg=--require=tsconfig-paths/register --disable-coverage",
     "test:coverage": "cross-env TS_NODE_PROJECT=\"tsconfig.test.json\" NODE_ENV=test tap --node-arg=--require=ts-node/register --node-arg=--require=tsconfig-paths/register test/**/*.test.ts --coverage-report=lcov",
     "start:pm2": "npm run build:prod && cross-env NODE_ENV=production pm2 start dist/server.js --name url-shortener",
     "build:prod": "cross-env NODE_ENV=production swc src -d dist --source-maps --copy-files",

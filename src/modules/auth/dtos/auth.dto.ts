@@ -13,7 +13,7 @@ import { IUser } from '@/modules/user/interfaces/user.interface';
 
 export interface RegisterRequestDto extends Static<typeof RegisterUserBodySchema> {
   _id?: IUser['_id'];
-  displayUsername: IUser['displayUsername'];
+  displayUsername?: IUser['displayUsername'];
 }
 
 export interface RegisterResponseDto extends Omit<Static<typeof RegisterUserResponseSchema>, 'user.createdAt'> {}
