@@ -95,8 +95,9 @@ class App {
   }
 
   private async initializeJwtPlugin() {
+    await serviceContainer.setJwtSecret(this.app.config);
     const publicKey = await serviceContainer.jwtSecret(this.app.config);
-    await this.app.register(fastifyJwt, { secret: { public: publicKey } });
+    await this.app.register(fastifyJwt, { secret: { public: publicKey, private: publicKey } });
   }
 
   private initializeRoutes() {

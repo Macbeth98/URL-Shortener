@@ -47,9 +47,8 @@ export class ServiceContainer {
 
   urlService!: UrlService;
 
-  constructor() {
-    // this.cache = new SystemLRUCache();
-    this.jwtSecret = AuthModule.jwtSecret;
+  public async setJwtSecret(config: IConfig) {
+    this.jwtSecret = AuthModule.jwtSecret(config);
   }
 
   public async init(fastify: FastifyInstance) {

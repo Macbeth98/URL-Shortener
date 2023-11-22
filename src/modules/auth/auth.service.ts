@@ -109,6 +109,7 @@ class AuthService {
         username: user.username,
         email: user.email,
         tier: user.tier,
+        displayUsername: user.displayUsername,
         createdAt: user.createdAt.toISOString()
       },
       tokenExpiresIn: authResponse.tokenExpiresIn,
@@ -195,6 +196,7 @@ class AuthService {
       username: user.username,
       email: user.email,
       tier: user.tier,
+      displayUsername: user.displayUsername,
       createdAt: user.createdAt.toISOString()
     };
   }

@@ -9,7 +9,12 @@ import { IAuthProvider } from './interfaces/auth.interface';
 export class AuthModule {
   public authService: AuthService;
 
-  public static jwtSecret = CognitoAuthProvider.jwtSecret;
+  public static jwtSecret = (config: IConfig) => {
+    if (config.NODE_ENV !== 'production') {
+      return BasicAuthProvider.jwtSecret;
+    }
+    return CognitoAuthProvider.jwtSecret;
+  };
 
   constructor(authService: AuthService) {
     this.authService = authService;
