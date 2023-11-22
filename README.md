@@ -134,7 +134,8 @@ https://urlscut.co/api-docs
 
 ### Tests
 
-- Currently No test cases have been written.
+- Written end to end tests by calling the routing apis through fastify inject.
+- AUTH Router completed
 - Will be writing test cases soon...!
 
 ### Hosting
