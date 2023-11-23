@@ -9,12 +9,12 @@ export class UrlController {
     this.urlService = urlService;
   }
 
-  public createShortUrl = async (req: FastifyRequest<{ Body: CreateUrlRequestDto }>) => {
+  public createShortUrl = async (req: FastifyRequest<{ Body: CreateUrlRequestDto }>, reply: FastifyReply) => {
     const { body, user } = req;
     body.email = user.email;
     const url = await this.urlService.createShortUrl(body);
 
-    return url;
+    return reply.code(201).send(url);
   };
 
   public getShortUrl = async (req: FastifyRequest<{ Querystring: GetUrlQueryDto }>) => {
