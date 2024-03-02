@@ -58,7 +58,7 @@ export class ServiceContainer {
     this.jwt = fastify.jwt;
     this.httpErrors = fastify.httpErrors;
 
-    this.cache = this.config.NODE_ENV === 'production' ? new RedisLRUCache() : new SystemLRUCache();
+    this.cache = this.config.NODE_ENV === 'production' ? new RedisLRUCache(this.config) : new SystemLRUCache();
 
     this.userService = (await UserModule.register()).userService;
     this.authService = (await AuthModule.register(this.userService, this, this.config)).authService;

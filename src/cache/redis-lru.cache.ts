@@ -1,4 +1,5 @@
 import IORedis from 'ioredis';
+import { IConfig } from 'src/utils/validateEnv';
 import LRUCache from './LRUCache';
 import { ICache } from './cache.interface';
 
@@ -7,9 +8,10 @@ export class RedisLRUCache implements ICache {
 
   private readonly redis: IORedis;
 
-  constructor() {
+  constructor(config: IConfig) {
     this.lruCache = new LRUCache(500);
-    this.redis = new IORedis();
+    const redisHost = config.REDIS_HOST;
+    this.redis = new IORedis({ host: redisHost, port: 6379 });
   }
 
   async get(key: string): Promise<string | null> {

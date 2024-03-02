@@ -3,6 +3,7 @@ import { Static, Type } from '@sinclair/typebox';
 export const schema = Type.Object({
   NODE_ENV: Type.String(),
   PORT: Type.Number() || Type.String(),
+  HOST: Type.String(),
   DATABASE_URL: Type.String(),
   SECRET_KEY: Type.String(),
   AWS_COGNITO_USER_POOL_ID: Type.String(),
@@ -10,7 +11,8 @@ export const schema = Type.Object({
   AWS_REGION: Type.String(),
   AWS_COGNITO_ACCESS_KEY: Type.String(),
   AWS_COGNITO_SECRET_KEY: Type.String(),
-  SHORT_URL: Type.String()
+  SHORT_URL: Type.String(),
+  REDIS_HOST: Type.String()
 });
 
 export const typeBoxEnvSchema = schema;

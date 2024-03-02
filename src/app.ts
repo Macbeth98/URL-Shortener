@@ -51,7 +51,7 @@ class App {
     try {
       await this.init();
 
-      await this.app.listen({ port: Number(this.app.config.PORT) });
+      await this.app.listen({ port: Number(this.app.config.PORT), host: this.app.config.HOST || 'localhost' });
     } catch (err) {
       this.app.log.error(err);
       process.exit(1);
