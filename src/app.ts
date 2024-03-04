@@ -96,8 +96,11 @@ class App {
 
   private async initializeJwtPlugin() {
     await serviceContainer.setJwtSecret(this.app.config);
-    const publicKey = await serviceContainer.jwtSecret(this.app.config);
-    await this.app.register(fastifyJwt, { secret: { public: publicKey, private: publicKey } });
+    const jwtKey = await serviceContainer.jwtSecret(this.app.config);
+    const isProductionEnv = this.app.config.NODE_ENV === 'production';
+    await this.app.register(fastifyJwt, {
+      secret: { public: jwtKey, private: isProductionEnv ? null : jwtKey }
+    });
   }
 
   private initializeRoutes() {
