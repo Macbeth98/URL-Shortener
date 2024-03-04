@@ -99,6 +99,16 @@ Launch your server with this command:
 npm run dev
 ```
 
+## Docker Image
+
+- Pull the docker Image from here: https://urlscut.co/dockerimg || https://hub.docker.com/r/macbeth98/url-shortener
+- Run the server by pulling the docker image. Check the `env.example` file for Docker related settings and based on that create or update the `.env.production` file.
+- This file will be used by the docker-compose to inject the env variables.
+
+```sh
+docker-compose up -d
+```
+
 ### Swagger Endpoint:
 
 https://urlscut.co/api-docs
