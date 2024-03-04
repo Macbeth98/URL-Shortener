@@ -71,7 +71,11 @@ class App {
   }
 
   private async initializePlugins() {
-    await this.app.register(fastifyEnv, envOptions);
+    await this.app.register(fastifyEnv, {
+      schema: envOptions.schema,
+      data: process.env,
+      dotenv: process.env.ENV_DATA === 'process.env' ? false : envOptions.dotenv
+    });
     await this.app.register(mongodbPlugin, { uri: this.app.config.DATABASE_URL });
     await this.app.register(fastifyRateLimit, {
       max: 60,
